@@ -1,15 +1,18 @@
 import Link from "next/link";
-import { Search, Plus, ArrowLeft } from "lucide-react";
+import { Search, Plus } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { APP_LOGO_DARK_URL, APP_TITLE, RELATIVE_PATHS } from "@/lib/constants";
-import { vetrinoFont } from "@/app/layout";
 import Image from "next/image";
+import { vetrinoFont } from "@/app/fonts";
+import { cn } from "@/lib/utils";
+import GoBackButton from "./GoBackButton";
 
 interface HeaderProps {
   showSidebar?: boolean;
   showLogo?: boolean;
   showSearch?: boolean;
   showAdd?: boolean;
+  className?: string;
 }
 
 export default function AppHeader({
@@ -17,10 +20,16 @@ export default function AppHeader({
   showLogo = true,
   showSearch = true,
   showAdd = true,
+  className,
 }: HeaderProps) {
   return (
-    <header className="w-full flex items-center justify-between py-4 px-4 border-b shadow-gray-200">
-      <div>{showSidebar ? <SidebarTrigger /> : <ArrowLeft />}</div>
+    <header
+      className={cn(
+        "w-full flex items-center justify-between py-4 px-4",
+        className,
+      )}
+    >
+      <div>{showSidebar ? <SidebarTrigger /> : <GoBackButton />}</div>
 
       <div>
         {showLogo && (

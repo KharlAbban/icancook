@@ -1,25 +1,23 @@
 "use client";
 
-import { SAMPLE_RECIPE_DATA } from "@/lib/constants";
-import RecipeCard from "./recipe-card";
+import RecipeCard from "./RecipeCard";
 import Masonry from "react-responsive-masonry";
+import ExploreStaticHeader from "./ExploreStaticHeader";
+import { SANITY_FETCH_ALL_RECIPES_QUERYResult } from "@/sanity/types";
 
-export default function ExploreGrid() {
+interface ExploreGridProps {
+  recipes: SANITY_FETCH_ALL_RECIPES_QUERYResult;
+}
+
+export default function ExploreGrid({ recipes }: ExploreGridProps) {
+  if (!recipes || recipes.length < 1) return null;
+
   return (
     <>
       <Masonry columnsCount={2} gutter="16px">
-        <div className="gap-6">
-          <h2 className="text-xl">Lorem ipsum dolor sit amet.</h2>
-        </div>
-        {SAMPLE_RECIPE_DATA.map((recipe) => (
-          <RecipeCard
-            cookTime={recipe.cookTime}
-            id={recipe.id}
-            image={recipe.image}
-            title={recipe.recipeName}
-            isFavorite
-            key={recipe.id}
-          />
+        <ExploreStaticHeader />
+        {recipes.map((recipe) => (
+          <RecipeCard key={recipe._id} recipe={recipe} />
         ))}
       </Masonry>
     </>

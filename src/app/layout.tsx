@@ -1,6 +1,5 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import {
   APP_BASE_URL,
@@ -10,37 +9,7 @@ import {
 } from "@/lib/constants";
 import { ModeToggle, PWARegister, ThemeProvider } from "@/components/custom";
 import { Toaster } from "@/components/ui/sonner";
-
-// Font files can be colocated inside of `app`
-export const vetrinoFont = localFont({
-  src: "./Vetrino.otf",
-  display: "swap",
-});
-export const evolventaFont = localFont({
-  src: [
-    {
-      path: "./Evolventa-Regular.ttf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./Evolventa-Regular.ttf",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "./Evolventa-Bold.ttf",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "./Evolventa-Bold.ttf",
-      weight: "700",
-      style: "italic",
-    },
-  ],
-  display: "swap",
-});
+import { evolventaFont } from "./fonts";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_BASE_URL),

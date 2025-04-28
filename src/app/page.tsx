@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { APP_LOGO_DARK_URL, APP_TITLE, RELATIVE_PATHS } from "@/lib/constants";
 import { Metadata } from "next";
 import Link from "next/link";
-import { vetrinoFont } from "./layout";
 import Image from "next/image";
+import { vetrinoFont } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Landing Page",
