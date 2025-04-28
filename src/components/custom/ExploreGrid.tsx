@@ -14,7 +14,7 @@ export default function ExploreGrid({ recipes }: ExploreGridProps) {
 
   return (
     <>
-      <Masonry columnsCount={2} gutter="16px">
+      <Masonry columnsCount={2} gutter="24px">
         <ExploreStaticHeader />
         {recipes.map((recipe) => (
           <RecipeCard key={recipe._id} recipe={recipe} />

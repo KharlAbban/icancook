@@ -126,13 +126,15 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         </Button>
       </div>
       <div className="">
-        <h3 className="font-semibold text-lg mb-1">
+        <h3 className="font-semibold text-base mb-1">
           <Link href={`${RELATIVE_PATHS.recipes}/${recipe._id}`}>
-            {recipe.name}
+            {recipe.name && recipe.name?.length > 100
+              ? `${recipe.name.slice(0, 100)}...`
+              : recipe.name}
           </Link>
         </h3>
-        <p className="flex items-center font-semibold text-lg gap-1">
-          <FaClock size={20} className="mb-0.5" />
+        <p className="flex items-center font-semibold text-sm gap-1">
+          <FaClock size={15} className="mb-0.5" />
           {recipe.cookTime}
         </p>
       </div>

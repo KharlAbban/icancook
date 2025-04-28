@@ -7,6 +7,8 @@ import AppHeader from "./common/AppHeader";
 import ExploreGrid from "./ExploreGrid";
 import ExploreStaticHeader from "./ExploreStaticHeader";
 import IngredientDetails from "./ingredients/IngredientDetails";
+import DynamicLogo from "./common/DynamicLogo";
+import RecipeDetails from "./recipes/RecipeDetails";
 
 export {
   PWARegister,
@@ -18,4 +20,6 @@ export {
   ExploreGrid,
   ExploreStaticHeader,
   IngredientDetails,
+  DynamicLogo,
+  RecipeDetails,
 };
