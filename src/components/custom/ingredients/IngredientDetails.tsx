@@ -48,7 +48,7 @@ export default function IngredientDetails({
           className="px-4 pt-10 pb-6 rounded-t-4xl max-h-[90vh]"
           side="bottom"
         >
-          <h2 className={`${vetrinoFont.className} text-3xl`}>
+          <h2 className={`${vetrinoFont.className} text-2xl`}>
             {ingredient.name}
           </h2>
           <p className="text-gray-600 mb-4">Ingredient</p>

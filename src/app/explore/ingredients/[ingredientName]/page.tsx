@@ -64,7 +64,7 @@ export async function generateMetadata({
         toPlainText(ingredientInfo.description || []).slice(0, 120) ||
         APP_TAGLINE,
       images: [
-        `${ingredientInfo.ingredientImages ? urlFor(ingredientInfo.ingredientImages[0]).auto("format").url() : "/logos/logo.png"}`,
+        `${ingredientInfo.ingredientImages ? urlFor(ingredientInfo.ingredientImages[0]).auto("format").url() : APP_LOGO_DARK_URL}`,
       ],
     },
   };
@@ -86,7 +86,7 @@ export default async function IngredientDetailPage({
   return (
     <div className="w-full h-screen relative">
       <AppHeader
-        className="fixed top-0 z-50 invert p-6 bg-white"
+        className="fixed top-0 z-50 invert p-6"
         showLogo={false}
         showSidebar={false}
         showAdd={false}
