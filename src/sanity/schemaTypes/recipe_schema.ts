@@ -19,7 +19,7 @@ export const recipe_schema = defineType({
       title: "Recipe Images",
       type: "array",
       of: [{ type: "image" }],
-      description: "An image to show off the finished recipe",
+      description: "Images to show off the finished recipe",
       validation: (Rule) => Rule.min(1),
     }),
     defineField({
@@ -48,6 +48,13 @@ export const recipe_schema = defineType({
       type: "string",
       description:
         "A rough estimate of how long it takes to prepare this dish. Time yourself making this dish to add correct responses here",
+    }),
+    defineField({
+      name: "isFavorite",
+      title: "Favorite Recipe",
+      type: "boolean",
+      initialValue: false,
+      description: "Is this recipe a favorite of yours?",
     }),
   ],
   preview: {

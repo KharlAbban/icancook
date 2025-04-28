@@ -14,8 +14,8 @@ import {
   APP_TITLE,
   RELATIVE_PATHS,
 } from "@/lib/constants";
-import { vetrinoFont } from "@/app/layout";
 import SidebarModules from "./SidebarModules";
+import { vetrinoFont } from "@/app/fonts";
 
 function SidebarAppTitle() {
   return (
