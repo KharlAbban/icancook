@@ -34,7 +34,7 @@ export default function AppHeader({
       <div>
         {showLogo && (
           <Link
-            href={RELATIVE_PATHS.homePage}
+            href={RELATIVE_PATHS.indexPage}
             className="flex items-center gap-1"
           >
             <Image

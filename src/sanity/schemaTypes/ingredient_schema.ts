@@ -20,13 +20,12 @@ export const ingredient_schema = defineType({
       type: "array",
       of: [{ type: "image" }],
       description: "Images to show off the ingredient in different settings",
-      validation: (Rule) => Rule.min(1),
+      // validation: (Rule) => Rule.min(1),
     }),
     defineField({
       name: "description",
       title: "Ingredient Description",
-      type: "array",
-      of: [{ type: "block" }],
+      type: "text",
       description:
         "A description of this ingredient: what it is, how to use it, when and where",
     }),

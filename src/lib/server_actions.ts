@@ -5,6 +5,54 @@ import { SANITY_GET_RECIPE_BY_ID_QUERY } from "@/sanity/lib/queries";
 import { sanityWriteClient } from "@/sanity/lib/write_client";
 import { revalidatePath } from "next/cache";
 import { RELATIVE_PATHS } from "./constants";
+import { sample_ingredients_list } from "./sample";
+import { newIngredientFormValuesType } from "./types";
+import { SanityImageAssetDocument } from "next-sanity";
+
+export async function uploadImagesToSanity(
+  assets: File[],
+  imageNames: string[],
+): Promise<SanityImageAssetDocument[] | null> {
+  try {
+    console.log("Sanity bulk asset upload start...");
+
+    // Validate all images before uploading
+    for (const asset of assets) {
+      if (asset.size > 8 * 1024 * 1024) {
+        // 8MB limit
+        throw new Error(
+          "One or more images are too large. Please use images smaller than 8MB each.",
+        );
+      }
+    }
+
+    // Upload images sequentially to avoid overwhelming the connection
+    const uploadedAssets = [];
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+      const filename = imageNames[i];
+
+      const uploadedAsset = await sanityClient.assets.upload("image", asset, {
+        filename: filename,
+        timeout: 30000, // 30 second timeout
+      });
+
+      uploadedAssets.push(uploadedAsset);
+
+      // Add a small delay between uploads to prevent connection issues
+      if (i < assets.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+
+    console.log("All assets uploaded!");
+
+    return uploadedAssets;
+  } catch (error: any) {
+    console.error("Sanity bulk asset upload error:", error.message);
+    throw error;
+  }
+}
 
 export async function addRecipeToFavorites(recipeId: string) {
   try {
@@ -62,6 +110,96 @@ export async function removeRecipeFromFavorites(recipeId: string) {
 
     return {
       success: true,
+    };
+  } catch (error: any) {
+    console.error(error.message);
+
+    return {
+      error: error.message,
+    };
+  }
+}
+
+export async function addSampleIngredients() {
+  try {
+    sample_ingredients_list.map(async (ingredient) => {
+      await sanityWriteClient.create({
+        _type: "ingredient",
+        name: ingredient.name,
+        description: ingredient.description,
+      });
+
+      console.log("Added ingredient: ", ingredient.name);
+    });
+    return {
+      success: true,
+    };
+  } catch (error: any) {
+    console.error(error.message);
+
+    return {
+      error: error.message,
+    };
+  }
+}
+
+export async function addNewIngredient(
+  ingredientData: newIngredientFormValuesType,
+) {
+  try {
+    // Add timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+
+    let ingredientimagesRef: SanityImageAssetDocument[] | null;
+
+    const ingredientNames = ingredientData.ingredientImages.map((_, idx) => {
+      const safeName = ingredientData.name
+        .toLowerCase()
+        .replace(/\s+/g, "_")
+        .trim();
+      return `ingredient_${safeName}_${idx}`;
+    });
+
+    try {
+      ingredientimagesRef = await uploadImagesToSanity(
+        ingredientData.ingredientImages,
+        ingredientNames,
+      );
+      if (!ingredientimagesRef)
+        throw new Error("Failed to upload ingredient images");
+    } catch (imagesError: any) {
+      console.error("Ingredient images upload error:", imagesError);
+      clearTimeout(timeoutId);
+      return {
+        error:
+          "Failed to upload ingredient images. Please try again with smaller images or fewer images.",
+      };
+    }
+
+    const ingredientDoc = {
+      _type: "ingredient",
+      name: ingredientData.name,
+      description: ingredientData.description,
+      ingredientImages: ingredientimagesRef?.map((image) => ({
+        _type: "image",
+        _key: image._id,
+        asset: {
+          _type: "reference",
+          _ref: image._id,
+        },
+      })),
+    };
+
+    const newIngredientDoc = await sanityWriteClient.create(ingredientDoc, {
+      timeout: 60000,
+    });
+
+    clearTimeout(timeoutId);
+
+    return {
+      success: true,
+      ingredient_id: newIngredientDoc._id,
     };
   } catch (error: any) {
     console.error(error.message);

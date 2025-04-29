@@ -7,21 +7,20 @@ import {
 } from "@/lib/constants";
 import { sanityClient } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import { SANITY_GET_INGREDIENT_BY_NAME_QUERY } from "@/sanity/lib/queries";
+import { SANITY_GET_INGREDIENT_BY_ID_QUERY } from "@/sanity/lib/queries";
 import { Metadata } from "next";
-import { toPlainText } from "next-sanity";
 
 // Generate metadata for this page
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ ingredientName: string }>;
+  params: Promise<{ ingredientId: string }>;
 }): Promise<Metadata> {
-  const { ingredientName } = await params;
+  const { ingredientId } = await params;
   const ingredientInfo = await sanityClient.fetch(
-    SANITY_GET_INGREDIENT_BY_NAME_QUERY,
+    SANITY_GET_INGREDIENT_BY_ID_QUERY,
     {
-      ingredientName: ingredientName,
+      ingredientId: ingredientId,
     },
   );
 
@@ -34,14 +33,10 @@ export async function generateMetadata({
 
   return {
     title: `${ingredientInfo.name} Details ℹ️` || APP_TITLE,
-    description:
-      toPlainText(ingredientInfo.description || []).slice(0, 120) ||
-      APP_TAGLINE,
+    description: ingredientInfo.description || APP_TAGLINE,
     openGraph: {
       title: ingredientInfo.name || APP_TITLE,
-      description:
-        toPlainText(ingredientInfo.description || []).slice(0, 120) ||
-        APP_TAGLINE,
+      description: ingredientInfo.description || APP_TAGLINE,
       url: `${APP_INGREDIENTS_PAGE_URL}/${ingredientInfo.name}`,
       siteName: APP_TITLE,
       images: [
@@ -60,9 +55,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: `${ingredientInfo.name} Details ℹ️` || APP_TITLE,
-      description:
-        toPlainText(ingredientInfo.description || []).slice(0, 120) ||
-        APP_TAGLINE,
+      description: ingredientInfo.description || APP_TAGLINE,
       images: [
         `${ingredientInfo.ingredientImages ? urlFor(ingredientInfo.ingredientImages[0]).auto("format").url() : APP_LOGO_DARK_URL}`,
       ],
@@ -73,20 +66,20 @@ export async function generateMetadata({
 export default async function IngredientDetailPage({
   params,
 }: {
-  params: Promise<{ ingredientName: string }>;
+  params: Promise<{ ingredientId: string }>;
 }) {
-  const { ingredientName } = await params;
+  const { ingredientId } = await params;
   const ingredientInfo = await sanityClient.fetch(
-    SANITY_GET_INGREDIENT_BY_NAME_QUERY,
+    SANITY_GET_INGREDIENT_BY_ID_QUERY,
     {
-      ingredientName: ingredientName,
+      ingredientId: ingredientId,
     },
   );
 
   return (
     <div className="w-full h-screen relative">
       <AppHeader
-        className="fixed top-0 z-50 invert p-6"
+        className="z-50 p-6 relative invert"
         showLogo={false}
         showSidebar={false}
         showAdd={false}
