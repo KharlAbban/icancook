@@ -28,7 +28,7 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
       </div>
       <div className="">
         <h3 className="font-semibold text-base mb-1">
-          <Link href={`${RELATIVE_PATHS.ingredients}/${ingredient.name}`}>
+          <Link href={`${RELATIVE_PATHS.ingredients}/${ingredient._id}`}>
             {ingredient.name}
           </Link>
         </h3>
