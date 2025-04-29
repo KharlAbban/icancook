@@ -2,18 +2,17 @@
 
 import { vetrinoFont } from "@/app/fonts";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { APP_TITLE } from "@/lib/constants";
 import { urlFor } from "@/sanity/lib/image";
-import { SANITY_GET_INGREDIENT_BY_NAME_QUERYResult } from "@/sanity/types";
-import { PortableText, toPlainText } from "next-sanity";
+import { SANITY_GET_INGREDIENT_BY_ID_QUERYResult } from "@/sanity/types";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { useState } from "react";
 import { RiFileList3Line } from "react-icons/ri";
 
 interface IngredientDetailsProps {
-  ingredient: SANITY_GET_INGREDIENT_BY_NAME_QUERYResult;
+  ingredient: SANITY_GET_INGREDIENT_BY_ID_QUERYResult;
 }
 
 export default function IngredientDetails({
@@ -28,11 +27,9 @@ export default function IngredientDetails({
   )
     return notFound();
 
-  const plainTextPreview = toPlainText(ingredient.description || []);
-
   return (
-    <>
-      <div className="w-full aspect-[9/14] bg-black relative">
+    <div className="w-full absolute h-full top-0">
+      <div className="w-full aspect-[9/14] max-h-[90vh] relative">
         <Image
           src={urlFor(ingredient.ingredientImages[0]).auto("format").url()}
           className="relative object-cover"
@@ -41,11 +38,21 @@ export default function IngredientDetails({
           fill
         />
       </div>
-      <Sheet open defaultOpen>
+      <Sheet defaultOpen>
+        <div className="max-h-[10vh] shrink-0 p-4">
+          <p className="text-gray-500 text-sm">Ingredient</p>
+          <h2 className={`text-3xl font-medium ${vetrinoFont.className} mb-2`}>
+            {ingredient.name}
+          </h2>
+          <SheetTrigger asChild>
+            <Button size="lg" className="rounded-xl w-full py-6">
+              Ingredient Info
+            </Button>
+          </SheetTrigger>
+        </div>
         <SheetContent
           addOverlay={false}
-          useClose={false}
-          className="px-4 pt-10 pb-6 rounded-t-4xl max-h-[90vh]"
+          className="px-4 pt-10 pb-6 rounded-t-4xl max-h-[90vh] min-h-[34vh]"
           side="bottom"
         >
           <h2 className={`${vetrinoFont.className} text-2xl`}>
@@ -54,27 +61,31 @@ export default function IngredientDetails({
           <p className="text-gray-600 mb-4">Ingredient</p>
           <div className="transition-all duration-300 w-full overflow-y-auto">
             {readMore ? (
-              <PortableText value={ingredient.description || []} />
+              <p className="transition-all duration-200 wrap-break-word">
+                {ingredient.description}
+              </p>
             ) : (
-              <p className="transition-all duration-200">
-                {plainTextPreview.length > 200
-                  ? `${plainTextPreview.slice(0, 200)}...`
-                  : plainTextPreview}
+              <p className="transition-all duration-200 wrap-break-word">
+                {ingredient.description && ingredient.description.length > 200
+                  ? `${ingredient.description.slice(0, 200)}...`
+                  : ingredient.description}
               </p>
             )}
           </div>
-          <Button
-            onClick={() => setReadMore((prevRead) => !prevRead)}
-            size="lg"
-            className="rounded-full w-max py-6 ml-auto outline-0 border-0"
-          >
-            <div className="flex items-center justify-center gap-2 w-full px-4">
-              <RiFileList3Line size={20} />
-              {readMore ? "Read Less" : "Read More"}
-            </div>
-          </Button>
+          {ingredient.description && ingredient.description.length > 200 && (
+            <Button
+              onClick={() => setReadMore((prevRead) => !prevRead)}
+              size="lg"
+              className="rounded-full w-max py-6 ml-auto outline-0 border-0"
+            >
+              <div className="flex items-center justify-center gap-2 w-full px-4">
+                <RiFileList3Line size={20} />
+                {readMore ? "Read Less" : "Read More"}
+              </div>
+            </Button>
+          )}
         </SheetContent>
       </Sheet>
-    </>
+    </div>
   );
 }

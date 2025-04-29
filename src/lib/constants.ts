@@ -1,4 +1,4 @@
-import { Home, IceCreamBowl, Search, Vegan } from "lucide-react";
+import { Home, IceCreamBowl, Search, TreePalm, Vegan } from "lucide-react";
 
 // app metadata
 export const APP_TITLE = "icancook";
@@ -20,9 +20,9 @@ export const APP_RECIPES_PAGE_URL = `${APP_BASE_URL}/explore/recipes`;
 export const RELATIVE_PATHS = {
   indexPage: "/",
   homePage: "/explore",
-  newRecipe: "/new/recipe",
-  newIngredient: "/new/ingredient",
-  searchPage: "/search",
+  newRecipe: "/explore/new/recipe",
+  newIngredient: "/explore/new/ingredient",
+  searchPage: "/explore/search",
   ingredients: "/explore/ingredients",
   recipes: "/explore/recipes",
 };
@@ -33,8 +33,13 @@ export const SIDEBAR_MODULES = [
     menuItems: [
       {
         linkTo: RELATIVE_PATHS.homePage,
-        linkText: "HomePage",
+        linkText: "Recipes",
         icon: Home,
+      },
+      {
+        linkTo: RELATIVE_PATHS.ingredients,
+        linkText: "Ingredients",
+        icon: TreePalm,
       },
       {
         linkTo: RELATIVE_PATHS.searchPage,

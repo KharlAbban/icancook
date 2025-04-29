@@ -15,7 +15,7 @@ import {
   addRecipeToFavorites,
   removeRecipeFromFavorites,
 } from "@/lib/server_actions";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 
 interface RecipeCardProps {
   recipe: SANITY_FETCH_ALL_RECIPES_QUERYResult[number];
