@@ -83,6 +83,7 @@ export default async function IngredientDetailPage({
         showLogo={false}
         showSidebar={false}
         showAdd={false}
+        recipeRoute={false}
       />
       <IngredientDetails ingredient={ingredientInfo} />
     </div>

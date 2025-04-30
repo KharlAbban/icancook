@@ -2,14 +2,13 @@
 
 import { vetrinoFont } from "@/app/fonts";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { APP_TITLE } from "@/lib/constants";
-import { urlFor } from "@/sanity/lib/image";
 import { SANITY_GET_RECIPE_BY_ID_QUERYResult } from "@/sanity/types";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { PiCookingPotLight } from "react-icons/pi";
+import ImageSlider from "../common/ImageSlider";
 
 interface RecipeDetailsProps {
   recipe: SANITY_GET_RECIPE_BY_ID_QUERYResult;
@@ -21,19 +20,24 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
 
   return (
     <>
-      <div className="w-full aspect-[9/14] bg-black relative">
-        <Image
-          src={urlFor(recipe.recipeImages[0]).auto("format").url()}
-          className="relative object-cover"
-          alt={recipe.name || APP_TITLE}
-          title={recipe.name}
-          fill
-        />
-      </div>
-      <Sheet open defaultOpen>
+      <ImageSlider
+        images={recipe.recipeImages}
+        altText={recipe.name || APP_TITLE}
+      />
+      <Sheet defaultOpen>
+        <div className="max-h-[10vh] shrink-0 p-4">
+          <p className="text-gray-500 text-xs">Recipe</p>
+          <h2 className={`text-2xl font-medium ${vetrinoFont.className} mb-2`}>
+            {recipe.name}
+          </h2>
+          <SheetTrigger asChild>
+            <Button size="lg" className="rounded-xl w-full py-6">
+              Recipe Brief
+            </Button>
+          </SheetTrigger>
+        </div>
         <SheetContent
           addOverlay={false}
-          useClose={false}
           className="px-4 pt-10 pb-6 rounded-t-4xl max-h-[90vh]"
           side="bottom"
         >

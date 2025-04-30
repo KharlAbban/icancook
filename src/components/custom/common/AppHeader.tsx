@@ -13,6 +13,7 @@ interface HeaderProps {
   showSearch?: boolean;
   showAdd?: boolean;
   className?: string;
+  recipeRoute?: boolean;
 }
 
 export default function AppHeader({
@@ -21,6 +22,7 @@ export default function AppHeader({
   showSearch = true,
   showAdd = true,
   className,
+  recipeRoute = true,
 }: HeaderProps) {
   return (
     <header
@@ -51,7 +53,14 @@ export default function AppHeader({
 
       <div className="flex items-center gap-4">
         {showSearch && (
-          <Link href={RELATIVE_PATHS.searchPage} aria-label="Search">
+          <Link
+            href={
+              recipeRoute
+                ? RELATIVE_PATHS.recipeSearchPage
+                : RELATIVE_PATHS.ingredientSearchPage
+            }
+            aria-label="Search"
+          >
             <Search size={24} />
           </Link>
         )}

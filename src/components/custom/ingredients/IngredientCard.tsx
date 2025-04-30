@@ -12,7 +12,7 @@ interface IngredientCardProps {
 
 export default function IngredientCard({ ingredient }: IngredientCardProps) {
   return (
-    <article className="recipe-card w-full mb-4">
+    <article className="recipe-card w-full mb-2">
       <div className="relative aspect-[9/14] rounded-xl overflow-hidden mb-4">
         <Image
           src={
@@ -27,7 +27,7 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
         />
       </div>
       <div className="">
-        <h3 className="font-semibold text-base mb-1">
+        <h3 className="font-semibold text-base mb-1 truncate">
           <Link href={`${RELATIVE_PATHS.ingredients}/${ingredient._id}`}>
             {ingredient.name}
           </Link>

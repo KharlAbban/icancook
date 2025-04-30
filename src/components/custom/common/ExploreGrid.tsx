@@ -27,7 +27,11 @@ export default function ExploreGrid({
         {recipes &&
           recipes.length > 0 &&
           recipes.map((recipe) => (
-            <RecipeCard key={recipe._id} recipe={recipe} />
+            <RecipeCard
+              truncate={!useStaticText}
+              key={recipe._id}
+              recipe={recipe}
+            />
           ))}
         {ingredients &&
           ingredients.length > 0 &&
