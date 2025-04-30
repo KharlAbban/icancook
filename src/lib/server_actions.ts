@@ -26,10 +26,10 @@ export async function uploadImagesToSanity(
 
     // Validate all images before uploading
     for (const asset of assets) {
-      if (asset.size > 8 * 1024 * 1024) {
-        // 8MB limit
+      if (asset.size > 10 * 1024 * 1024) {
+        // 10MB limit
         throw new Error(
-          "One or more images are too large. Please use images smaller than 8MB each.",
+          "One or more images are too large. Please use images smaller than 10MB each.",
         );
       }
     }
@@ -42,7 +42,7 @@ export async function uploadImagesToSanity(
 
       const uploadedAsset = await sanityClient.assets.upload("image", asset, {
         filename: filename,
-        timeout: 30000, // 30 second timeout
+        timeout: 60000, // 60 second timeout
       });
 
       uploadedAssets.push(uploadedAsset);
@@ -157,7 +157,7 @@ export async function addNewIngredient(
   try {
     // Add timeout handling
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
 
     let ingredientimagesRef: SanityImageAssetDocument[] | null;
 
@@ -200,7 +200,7 @@ export async function addNewIngredient(
     };
 
     const newIngredientDoc = await sanityWriteClient.create(ingredientDoc, {
-      timeout: 60000,
+      timeout: 120000,
     });
 
     clearTimeout(timeoutId);
