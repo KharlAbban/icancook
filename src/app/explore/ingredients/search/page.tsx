@@ -44,9 +44,13 @@ export default async function IngredientsSearchPage({
   searchParams: Promise<IngredientsSearchPageProps>;
 }) {
   const { searchQuery, page } = await searchParams;
-  const ingrSearchResults = await searchForItems(searchQuery || "", {
-    page: page,
-  }, false);
+  const ingrSearchResults = await searchForItems(
+    searchQuery || "",
+    {
+      page: page,
+    },
+    false,
+  );
 
   return (
     <section className="w-full">
