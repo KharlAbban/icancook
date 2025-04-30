@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { vetrinoFont } from "./fonts";
 import { DynamicLogo } from "@/components/custom";
-import { IceCreamBowl, Vegan } from "lucide-react";
+import { IceCreamBowl, TreePalm } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Landing Page",
@@ -23,7 +23,7 @@ export default function Home() {
       </Button>
       <Button variant="outline" asChild>
         <Link href={RELATIVE_PATHS.ingredients}>
-          See Ingredients <Vegan />
+          See Ingredients <TreePalm />
         </Link>
       </Button>
     </div>

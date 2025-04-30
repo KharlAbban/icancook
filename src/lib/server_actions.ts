@@ -1,13 +1,21 @@
 "use server";
 
 import { sanityClient } from "@/sanity/lib/client";
-import { SANITY_GET_RECIPE_BY_ID_QUERY } from "@/sanity/lib/queries";
+import {
+  SANITY_GET_RECIPE_BY_ID_QUERY,
+  SANITY_SEARCH_FOR_INGREDIENT_QUERY,
+  SANITY_SEARCH_FOR_RECIPE_QUERY,
+} from "@/sanity/lib/queries";
 import { sanityWriteClient } from "@/sanity/lib/write_client";
 import { revalidatePath } from "next/cache";
-import { RELATIVE_PATHS } from "./constants";
+import { DEFAULT_SEARCH_LIMIT, RELATIVE_PATHS } from "./constants";
 import { sample_ingredients_list } from "./sample";
 import { newIngredientFormValuesType } from "./types";
 import { SanityImageAssetDocument } from "next-sanity";
+
+interface SearchFilterProps {
+  page?: number;
+}
 
 export async function uploadImagesToSanity(
   assets: File[],
@@ -205,6 +213,50 @@ export async function addNewIngredient(
     console.error(error.message);
 
     return {
+      error: error.message,
+    };
+  }
+}
+
+export async function searchForItems(
+  searchQuery: string,
+  searchFilters?: SearchFilterProps,
+  recipeSearch: boolean = true,
+) {
+  try {
+    const queryParams = {
+      searchQuery: searchQuery,
+      skip: searchFilters?.page
+        ? (searchFilters.page - 1) * DEFAULT_SEARCH_LIMIT
+        : 0,
+      limit: DEFAULT_SEARCH_LIMIT,
+    };
+
+    const results = await sanityClient.fetch(
+      recipeSearch
+        ? SANITY_SEARCH_FOR_RECIPE_QUERY
+        : SANITY_SEARCH_FOR_INGREDIENT_QUERY,
+      queryParams,
+    );
+
+    const { totalSearchResults, searchResults } = results;
+
+    if (totalSearchResults < 1)
+      return {
+        query: searchQuery,
+        total: 0,
+      };
+
+    return {
+      query: searchQuery,
+      success: true,
+      total: totalSearchResults,
+      items: searchResults,
+    };
+  } catch (error: any) {
+    console.error(error.message);
+    return {
+      query: searchQuery,
       error: error.message,
     };
   }

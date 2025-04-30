@@ -19,9 +19,10 @@ import { Button } from "../../ui/button";
 
 interface RecipeCardProps {
   recipe: SANITY_FETCH_ALL_RECIPES_QUERYResult[number];
+  truncate: boolean;
 }
 
-export default function RecipeCard({ recipe }: RecipeCardProps) {
+export default function RecipeCard({ recipe, truncate }: RecipeCardProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(
     recipe.isFavorite ?? false,
   );
@@ -126,7 +127,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         </Button>
       </div>
       <div className="">
-        <h3 className="font-semibold text-base mb-1">
+        <h3
+          className={`${truncate && "truncate"} font-semibold text-base mb-1`}
+        >
           <Link href={`${RELATIVE_PATHS.recipes}/${recipe._id}`}>
             {recipe.name && recipe.name?.length > 100
               ? `${recipe.name.slice(0, 100)}...`

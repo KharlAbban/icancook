@@ -19,6 +19,28 @@ export const SANITY_GET_RECIPE_BY_ID_QUERY = defineQuery(`
     }
 `);
 
+export const SANITY_SEARCH_FOR_RECIPE_QUERY = defineQuery(`
+    {
+        "totalSearchResults": count(
+            *[_type == "recipe"
+                // Handle text search with optional parameter
+                && (!defined($searchQuery) || $searchQuery == "" || 
+                    name match ("*" + $searchQuery + "*"))
+            ]
+        ),
+        "searchResults": *[_type == "recipe"
+            // Handle text search with optional parameter
+            && (!defined($searchQuery) || $searchQuery == "" || 
+                name match ("*" + $searchQuery + "*"))
+        ] | order(_createdAt desc) [
+            // Pagination
+            $skip...($skip + $limit)
+        ] {
+            ...
+        }
+    }
+`);
+
 // Ingredient Queries
 export const SANITY_FETCH_ALL_INGREDIENTS_QUERY = defineQuery(`
     *[_type == "ingredient"] | order(_createdAt desc) {
@@ -35,5 +57,27 @@ export const SANITY_GET_INGREDIENT_BY_NAME_QUERY = defineQuery(`
 export const SANITY_GET_INGREDIENT_BY_ID_QUERY = defineQuery(`
     *[_type == "ingredient" && _id == $ingredientId][0] {
         ...
+    }
+`);
+
+export const SANITY_SEARCH_FOR_INGREDIENT_QUERY = defineQuery(`
+    {
+        "totalSearchResults": count(
+            *[_type == "ingredient"
+                // Handle text search with optional parameter
+                && (!defined($searchQuery) || $searchQuery == "" || 
+                    name match ("*" + $searchQuery + "*"))
+            ]
+        ),
+        "searchResults": *[_type == "ingredient"
+            // Handle text search with optional parameter
+            && (!defined($searchQuery) || $searchQuery == "" || 
+                name match ("*" + $searchQuery + "*"))
+        ] | order(_createdAt desc) [
+            // Pagination
+            $skip...($skip + $limit)
+        ] {
+            ...
+        }
     }
 `);

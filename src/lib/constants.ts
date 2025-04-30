@@ -1,4 +1,4 @@
-import { Home, IceCreamBowl, Search, TreePalm, Vegan } from "lucide-react";
+import { IceCreamBowl, Plus, Search, TreePalm } from "lucide-react";
 
 // app metadata
 export const APP_TITLE = "icancook";
@@ -22,39 +22,52 @@ export const RELATIVE_PATHS = {
   homePage: "/explore",
   newRecipe: "/explore/new/recipe",
   newIngredient: "/explore/new/ingredient",
-  searchPage: "/explore/search",
+  recipeSearchPage: "/explore/recipes/search",
+  ingredientSearchPage: "/explore/ingredients/search",
   ingredients: "/explore/ingredients",
   recipes: "/explore/recipes",
 };
 
+export const DEFAULT_SEARCH_LIMIT = 16;
+
 export const SIDEBAR_MODULES = [
   {
-    title: "Nav Links",
+    title: "Recipes",
     menuItems: [
       {
         linkTo: RELATIVE_PATHS.homePage,
         linkText: "Recipes",
-        icon: Home,
+        icon: IceCreamBowl,
       },
       {
-        linkTo: RELATIVE_PATHS.ingredients,
-        linkText: "Ingredients",
-        icon: TreePalm,
-      },
-      {
-        linkTo: RELATIVE_PATHS.searchPage,
-        linkText: "Search",
+        linkTo: RELATIVE_PATHS.recipeSearchPage,
+        linkText: "Find a Recipe",
         icon: Search,
       },
       {
         linkTo: RELATIVE_PATHS.newRecipe,
         linkText: "Add A Recipe",
-        icon: IceCreamBowl,
+        icon: Plus,
+      },
+    ],
+  },
+  {
+    title: "Ingredients",
+    menuItems: [
+      {
+        linkTo: RELATIVE_PATHS.homePage,
+        linkText: "Ingredients",
+        icon: TreePalm,
+      },
+      {
+        linkTo: RELATIVE_PATHS.ingredientSearchPage,
+        linkText: "Find an Ingredient",
+        icon: Search,
       },
       {
         linkTo: RELATIVE_PATHS.newIngredient,
         linkText: "Add an Ingredient",
-        icon: Vegan,
+        icon: Plus,
       },
     ],
   },

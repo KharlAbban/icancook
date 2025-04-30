@@ -77,7 +77,7 @@ export default async function RecipeDetailPage({
   });
 
   return (
-    <div className="w-full h-screen relative">
+    <div className="w-full h-screen relative overflow-x-hidden">
       <AppHeader
         className="fixed top-0 z-50 invert p-6"
         showLogo={false}

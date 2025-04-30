@@ -30,7 +30,7 @@ export default async function ExploreIngredientsPage() {
 
   return (
     <div className="w-full">
-      <AppHeader />
+      <AppHeader recipeRoute={false} />
 
       <section className="w-full my-6 px-2 overflow-x-hidden">
         <ExploreGrid useStaticText={false} ingredients={ingredients} />

@@ -4,12 +4,11 @@ import { vetrinoFont } from "@/app/fonts";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { APP_TITLE } from "@/lib/constants";
-import { urlFor } from "@/sanity/lib/image";
 import { SANITY_GET_INGREDIENT_BY_ID_QUERYResult } from "@/sanity/types";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { useState } from "react";
 import { RiFileList3Line } from "react-icons/ri";
+import ImageSlider from "../common/ImageSlider";
 
 interface IngredientDetailsProps {
   ingredient: SANITY_GET_INGREDIENT_BY_ID_QUERYResult;
@@ -29,15 +28,10 @@ export default function IngredientDetails({
 
   return (
     <div className="w-full absolute h-full top-0">
-      <div className="w-full aspect-[9/14] max-h-[90vh] relative">
-        <Image
-          src={urlFor(ingredient.ingredientImages[0]).auto("format").url()}
-          className="relative object-cover"
-          alt={ingredient.name || APP_TITLE}
-          title={ingredient.name}
-          fill
-        />
-      </div>
+      <ImageSlider
+        images={ingredient.ingredientImages}
+        altText={ingredient.name || APP_TITLE}
+      />
       <Sheet defaultOpen>
         <div className="max-h-[10vh] shrink-0 p-4">
           <p className="text-gray-500 text-sm">Ingredient</p>
