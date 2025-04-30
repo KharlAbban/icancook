@@ -55,7 +55,7 @@ export const SIDEBAR_MODULES = [
     title: "Ingredients",
     menuItems: [
       {
-        linkTo: RELATIVE_PATHS.homePage,
+        linkTo: RELATIVE_PATHS.ingredients,
         linkText: "Ingredients",
         icon: TreePalm,
       },

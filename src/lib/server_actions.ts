@@ -9,7 +9,6 @@ import {
 import { sanityWriteClient } from "@/sanity/lib/write_client";
 import { revalidatePath } from "next/cache";
 import { DEFAULT_SEARCH_LIMIT, RELATIVE_PATHS } from "./constants";
-import { sample_ingredients_list } from "./sample";
 import { newIngredientFormValuesType } from "./types";
 import { SanityImageAssetDocument } from "next-sanity";
 
@@ -116,29 +115,6 @@ export async function removeRecipeFromFavorites(recipeId: string) {
 
     revalidatePath(RELATIVE_PATHS.homePage);
 
-    return {
-      success: true,
-    };
-  } catch (error: any) {
-    console.error(error.message);
-
-    return {
-      error: error.message,
-    };
-  }
-}
-
-export async function addSampleIngredients() {
-  try {
-    sample_ingredients_list.map(async (ingredient) => {
-      await sanityWriteClient.create({
-        _type: "ingredient",
-        name: ingredient.name,
-        description: ingredient.description,
-      });
-
-      console.log("Added ingredient: ", ingredient.name);
-    });
     return {
       success: true,
     };
