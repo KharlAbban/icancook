@@ -190,25 +190,11 @@ export type Slug = {
   source?: string;
 };
 
-export type AllSanitySchemaTypes =
-  | SanityImagePaletteSwatch
-  | SanityImagePalette
-  | SanityImageDimensions
-  | SanityFileAsset
-  | Geopoint
-  | Ingredient
-  | Recipe
-  | SanityImageCrop
-  | SanityImageHotspot
-  | SanityImageAsset
-  | SanityAssetSourceData
-  | SanityImageMetadata
-  | MediaTag
-  | Slug;
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | Ingredient | Recipe | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata | MediaTag | Slug;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/queries.ts
 // Variable: SANITY_FETCH_ALL_RECIPES_QUERY
-// Query: *[_type == "recipe"] | order(_createdAt desc) {        ...    }
+// Query: *[_type == "recipe"] | order(_updatedAt desc) {        ...    }
 export type SANITY_FETCH_ALL_RECIPES_QUERYResult = Array<{
   _id: string;
   _type: "recipe";
@@ -292,7 +278,7 @@ export type SANITY_GET_RECIPE_BY_ID_QUERYResult = {
   isFavorite?: boolean;
 } | null;
 // Variable: SANITY_FETCH_ALL_INGREDIENTS_QUERY
-// Query: *[_type == "ingredient"] | order(_createdAt desc) {        ...    }
+// Query: *[_type == "ingredient"] | order(_updatedAt desc) {        ...    }
 export type SANITY_FETCH_ALL_INGREDIENTS_QUERYResult = Array<{
   _id: string;
   _type: "ingredient";
@@ -368,11 +354,11 @@ export type SANITY_GET_INGREDIENT_BY_ID_QUERYResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n    *[_type == "recipe"] | order(_createdAt desc) {\n        ...\n    }\n': SANITY_FETCH_ALL_RECIPES_QUERYResult;
-    '\n    *[_type == "recipe" && name match ("*" + $recipeName + "*")][0] {\n        ...\n    }\n': SANITY_GET_RECIPE_BY_NAME_QUERYResult;
-    '\n    *[_type == "recipe" && _id == $recipeId][0] {\n        ...\n    }\n': SANITY_GET_RECIPE_BY_ID_QUERYResult;
-    '\n    *[_type == "ingredient"] | order(_createdAt desc) {\n        ...\n    }\n': SANITY_FETCH_ALL_INGREDIENTS_QUERYResult;
-    '\n    *[_type == "ingredient" && name match ("*" + $ingredientName + "*")][0] {\n        ...\n    }\n': SANITY_GET_INGREDIENT_BY_NAME_QUERYResult;
-    '\n    *[_type == "ingredient" && _id == $ingredientId][0] {\n        ...\n    }\n': SANITY_GET_INGREDIENT_BY_ID_QUERYResult;
+    "\n    *[_type == \"recipe\"] | order(_updatedAt desc) {\n        ...\n    }\n": SANITY_FETCH_ALL_RECIPES_QUERYResult;
+    "\n    *[_type == \"recipe\" && name match (\"*\" + $recipeName + \"*\")][0] {\n        ...\n    }\n": SANITY_GET_RECIPE_BY_NAME_QUERYResult;
+    "\n    *[_type == \"recipe\" && _id == $recipeId][0] {\n        ...\n    }\n": SANITY_GET_RECIPE_BY_ID_QUERYResult;
+    "\n    *[_type == \"ingredient\"] | order(_updatedAt desc) {\n        ...\n    }\n": SANITY_FETCH_ALL_INGREDIENTS_QUERYResult;
+    "\n    *[_type == \"ingredient\" && name match (\"*\" + $ingredientName + \"*\")][0] {\n        ...\n    }\n": SANITY_GET_INGREDIENT_BY_NAME_QUERYResult;
+    "\n    *[_type == \"ingredient\" && _id == $ingredientId][0] {\n        ...\n    }\n": SANITY_GET_INGREDIENT_BY_ID_QUERYResult;
   }
 }

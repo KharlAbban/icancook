@@ -2,6 +2,7 @@
 
 import { sanityClient } from "@/sanity/lib/client";
 import {
+  SANITY_GET_INGREDIENT_BY_ID_QUERY,
   SANITY_GET_RECIPE_BY_ID_QUERY,
   SANITY_SEARCH_FOR_INGREDIENT_QUERY,
   SANITY_SEARCH_FOR_RECIPE_QUERY,
@@ -16,6 +17,7 @@ interface SearchFilterProps {
   page?: number;
 }
 
+// General Actions
 export async function uploadImagesToSanity(
   assets: File[],
   imageNames: string[],
@@ -61,6 +63,61 @@ export async function uploadImagesToSanity(
   }
 }
 
+export async function searchForItems(
+  searchQuery: string,
+  searchFilters?: SearchFilterProps,
+  recipeSearch: boolean = true,
+) {
+  try {
+    const queryParams = {
+      searchQuery: searchQuery,
+      skip: searchFilters?.page
+        ? (searchFilters.page - 1) * DEFAULT_SEARCH_LIMIT
+        : 0,
+      limit: DEFAULT_SEARCH_LIMIT,
+    };
+
+    const results = await sanityClient.fetch(
+      recipeSearch
+        ? SANITY_SEARCH_FOR_RECIPE_QUERY
+        : SANITY_SEARCH_FOR_INGREDIENT_QUERY,
+      queryParams,
+    );
+
+    const { totalSearchResults, searchResults } = results;
+
+    if (totalSearchResults < 1)
+      return {
+        query: searchQuery,
+        total: 0,
+      };
+
+    return {
+      query: searchQuery,
+      success: true,
+      total: totalSearchResults,
+      items: searchResults,
+    };
+  } catch (error: any) {
+    console.error(error.message);
+    return {
+      query: searchQuery,
+      error: error.message,
+    };
+  }
+}
+
+export async function deleteAsset(assetId: string) {
+  try {
+    await sanityClient.delete(assetId);
+    return true;
+  } catch (error) {
+    console.error(`Failed to delete asset ${assetId}:`, error);
+    return false;
+  }
+}
+
+// Recipe Actions
 export async function addRecipeToFavorites(recipeId: string) {
   try {
     const existingRecipe = await sanityClient.fetch(
@@ -127,6 +184,7 @@ export async function removeRecipeFromFavorites(recipeId: string) {
   }
 }
 
+// Ingredient Actions
 export async function addNewIngredient(
   ingredientData: newIngredientFormValuesType,
 ) {
@@ -194,45 +252,44 @@ export async function addNewIngredient(
   }
 }
 
-export async function searchForItems(
-  searchQuery: string,
-  searchFilters?: SearchFilterProps,
-  recipeSearch: boolean = true,
-) {
+export async function deleteIngredient(ingredientId: string) {
   try {
-    const queryParams = {
-      searchQuery: searchQuery,
-      skip: searchFilters?.page
-        ? (searchFilters.page - 1) * DEFAULT_SEARCH_LIMIT
-        : 0,
-      limit: DEFAULT_SEARCH_LIMIT,
-    };
-
-    const results = await sanityClient.fetch(
-      recipeSearch
-        ? SANITY_SEARCH_FOR_RECIPE_QUERY
-        : SANITY_SEARCH_FOR_INGREDIENT_QUERY,
-      queryParams,
+    const existingIngredient = await sanityClient.fetch(
+      SANITY_GET_INGREDIENT_BY_ID_QUERY,
+      {
+        ingredientId: ingredientId,
+      },
     );
 
-    const { totalSearchResults, searchResults } = results;
+    if (!existingIngredient || !existingIngredient.ingredientImages)
+      throw new Error("Ingredient does not exist!");
 
-    if (totalSearchResults < 1)
-      return {
-        query: searchQuery,
-        total: 0,
-      };
+    const imageAssetIds = [];
+
+    // Delete photos if they exist
+    for (const photo of existingIngredient.ingredientImages) {
+      if (photo.asset?._ref) {
+        imageAssetIds.push(photo.asset._ref);
+      }
+    }
+
+    // Delete ingredient document
+    await sanityWriteClient.delete(ingredientId);
+
+    // Delete all images
+    for (const assetId of imageAssetIds) {
+      await deleteAsset(assetId);
+    }
+
+    revalidatePath(RELATIVE_PATHS.ingredients);
 
     return {
-      query: searchQuery,
       success: true,
-      total: totalSearchResults,
-      items: searchResults,
     };
   } catch (error: any) {
     console.error(error.message);
+
     return {
-      query: searchQuery,
       error: error.message,
     };
   }
