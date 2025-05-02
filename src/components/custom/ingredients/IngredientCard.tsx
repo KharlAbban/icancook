@@ -12,27 +12,30 @@ interface IngredientCardProps {
 
 export default function IngredientCard({ ingredient }: IngredientCardProps) {
   return (
-    <article className="recipe-card w-full mb-2">
-      <div className="relative aspect-[9/14] rounded-xl overflow-hidden mb-4">
-        <Image
-          src={
-            ingredient.ingredientImages
-              ? urlFor(ingredient.ingredientImages[0]).auto("format").url()
-              : "/placeholder.svg"
-          }
-          alt={ingredient.name || APP_TITLE}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
-      </div>
-      <div className="">
-        <h3 className="font-semibold text-base mb-1 truncate">
-          <Link href={`${RELATIVE_PATHS.ingredients}/${ingredient._id}`}>
+    <Link
+      href={`${RELATIVE_PATHS.ingredients}/${ingredient._id}`}
+      className="w-full mb-2"
+    >
+      <article className="recipe-card w-full">
+        <div className="relative aspect-[9/14] rounded-xl overflow-hidden mb-4">
+          <Image
+            src={
+              ingredient.ingredientImages
+                ? urlFor(ingredient.ingredientImages[0]).auto("format").url()
+                : "/placeholder.svg"
+            }
+            alt={ingredient.name || APP_TITLE}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        </div>
+        <div className="">
+          <h3 className="font-semibold text-base mb-1 truncate">
             {ingredient.name}
-          </Link>
-        </h3>
-      </div>
-    </article>
+          </h3>
+        </div>
+      </article>
+    </Link>
   );
 }

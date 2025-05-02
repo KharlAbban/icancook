@@ -2,7 +2,7 @@ import { defineQuery } from "next-sanity";
 
 // Recipe Queries
 export const SANITY_FETCH_ALL_RECIPES_QUERY = defineQuery(`
-    *[_type == "recipe"] | order(_createdAt desc) {
+    *[_type == "recipe"] | order(_updatedAt desc) {
         ...
     }
 `);
@@ -32,7 +32,7 @@ export const SANITY_SEARCH_FOR_RECIPE_QUERY = defineQuery(`
             // Handle text search with optional parameter
             && (!defined($searchQuery) || $searchQuery == "" || 
                 name match ("*" + $searchQuery + "*"))
-        ] | order(_createdAt desc) [
+        ] | order(_updatedAt desc) [
             // Pagination
             $skip...($skip + $limit)
         ] {
@@ -43,7 +43,7 @@ export const SANITY_SEARCH_FOR_RECIPE_QUERY = defineQuery(`
 
 // Ingredient Queries
 export const SANITY_FETCH_ALL_INGREDIENTS_QUERY = defineQuery(`
-    *[_type == "ingredient"] | order(_createdAt desc) {
+    *[_type == "ingredient"] | order(_updatedAt desc) {
         ...
     }
 `);
@@ -73,7 +73,7 @@ export const SANITY_SEARCH_FOR_INGREDIENT_QUERY = defineQuery(`
             // Handle text search with optional parameter
             && (!defined($searchQuery) || $searchQuery == "" || 
                 name match ("*" + $searchQuery + "*"))
-        ] | order(_createdAt desc) [
+        ] | order(_updatedAt desc) [
             // Pagination
             $skip...($skip + $limit)
         ] {

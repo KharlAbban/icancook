@@ -16,6 +16,7 @@ import NoContent from "./common/NoContent";
 import SearchForm from "./common/SearchForm";
 import SearchPagination from "./common/SearchPagination";
 import ImageSlider from "./common/ImageSlider";
+import DeleteIngredient from "./ingredients/DeleteIngredient";
 
 export {
   PWARegister,
@@ -36,4 +37,5 @@ export {
   SearchForm,
   SearchPagination,
   ImageSlider,
+  DeleteIngredient,
 };

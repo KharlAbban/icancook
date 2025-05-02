@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { useState } from "react";
 import { RiFileList3Line } from "react-icons/ri";
 import ImageSlider from "../common/ImageSlider";
+import DeleteIngredient from "./DeleteIngredient";
 
 interface IngredientDetailsProps {
   ingredient: SANITY_GET_INGREDIENT_BY_ID_QUERYResult;
@@ -33,9 +34,14 @@ export default function IngredientDetails({
         altText={ingredient.name || APP_TITLE}
       />
       <Sheet defaultOpen>
-        <div className="max-h-[10vh] shrink-0 p-4">
-          <p className="text-gray-500 text-sm">Ingredient</p>
-          <h2 className={`text-3xl font-medium ${vetrinoFont.className} mb-2`}>
+        <div className="shrink-0 p-4 mb-2 w-full overflow-x-hidden">
+          <p className="text-gray-500 text-sm flex items-center justify-between w-full gap-6">
+            Ingredient
+            <DeleteIngredient ingredientId={ingredient._id} />
+          </p>
+          <h2
+            className={`text-3xl font-medium ${vetrinoFont.className} mb-2 wrap-break-word`}
+          >
             {ingredient.name}
           </h2>
           <SheetTrigger asChild>
