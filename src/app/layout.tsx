@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants";
 import { ModeToggle, PWARegister, ThemeProvider } from "@/components/custom";
 import { Toaster } from "@/components/ui/sonner";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import { evolventaFont } from "./fonts";
 
 export const metadata: Metadata = {
@@ -71,23 +72,25 @@ export default function RootLayout({
       <body
         className={`${evolventaFont.className} antialiased w-screen overflow-x-hidden`}
       >
-        <ThemeProvider
-          attribute="class"
-          enableSystem={true}
-          defaultTheme="light"
-          disableTransitionOnChange={true}
-        >
-          {children}
-          <ModeToggle />
-        </ThemeProvider>
-        <PWARegister />
-        <Toaster
-          richColors
-          closeButton
-          visibleToasts={3}
-          position="bottom-center"
-        />
-        <Analytics />
+        <PostHogProvider>
+          <ThemeProvider
+            attribute="class"
+            enableSystem={true}
+            defaultTheme="light"
+            disableTransitionOnChange={true}
+          >
+            {children}
+            <ModeToggle />
+          </ThemeProvider>
+          <PWARegister />
+          <Toaster
+            richColors
+            closeButton
+            visibleToasts={3}
+            position="bottom-center"
+          />
+          <Analytics />
+        </PostHogProvider>
       </body>
     </html>
   );
