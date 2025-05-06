@@ -187,7 +187,7 @@ export async function removeRecipeFromFavorites(recipeId: string) {
 // Ingredient Actions
 export async function addNewIngredient(
   ingredientData: newIngredientFormValuesType,
-  imagesRef: SanityImageAssetDocument[],
+  imagesRef: string[],
 ) {
   try {
     // Add timeout handling
@@ -198,12 +198,12 @@ export async function addNewIngredient(
       _type: "ingredient",
       name: ingredientData.name,
       description: ingredientData.description,
-      ingredientImages: imagesRef?.map((image) => ({
+      ingredientImages: imagesRef?.map((imageRef) => ({
         _type: "image",
-        _key: image._id,
+        _key: imageRef,
         asset: {
           _type: "reference",
-          _ref: image._id,
+          _ref: imageRef,
         },
       })),
     };
