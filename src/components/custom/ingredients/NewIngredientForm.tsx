@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { addNewIngredient } from "@/lib/server_actions";
+import { addNewIngredient, uploadImagesToSanity } from "@/lib/server_actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import FormImagesInput from "../common/FormImagesInput";
@@ -51,7 +51,22 @@ export default function NewIngredientForm() {
         });
       }
 
-      const newIngredient = await addNewIngredient(data);
+      // upload images here first
+      const ingredientNames = data.ingredientImages.map((_, idx) => {
+        const safeName = data.name.toLowerCase().replace(/\s+/g, "_").trim();
+        return `ingredient_${safeName}_${idx}`;
+      });
+
+      const ingredientimagesRef = await uploadImagesToSanity(
+        data.ingredientImages,
+        ingredientNames,
+      );
+
+      if (!ingredientimagesRef || ingredientimagesRef.length < 1)
+        throw new Error("Failed to upload ingredient images");
+
+      // add new ingredient
+      const newIngredient = await addNewIngredient(data, ingredientimagesRef);
 
       if (newIngredient.success) {
         newIngredientForm.reset();

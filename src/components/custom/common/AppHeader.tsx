@@ -66,7 +66,7 @@ export default function AppHeader({
         )}
 
         {showAdd && (
-          <Link href={RELATIVE_PATHS.newRecipe} aria-label="Add new recipe">
+          <Link href={recipeRoute ? RELATIVE_PATHS.newRecipe : RELATIVE_PATHS.newIngredient} aria-label="Add new recipe">
             <Plus size={24} />
           </Link>
         )}

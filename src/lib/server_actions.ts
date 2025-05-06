@@ -187,43 +187,18 @@ export async function removeRecipeFromFavorites(recipeId: string) {
 // Ingredient Actions
 export async function addNewIngredient(
   ingredientData: newIngredientFormValuesType,
+  imagesRef: SanityImageAssetDocument[],
 ) {
   try {
     // Add timeout handling
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
 
-    let ingredientimagesRef: SanityImageAssetDocument[] | null;
-
-    const ingredientNames = ingredientData.ingredientImages.map((_, idx) => {
-      const safeName = ingredientData.name
-        .toLowerCase()
-        .replace(/\s+/g, "_")
-        .trim();
-      return `ingredient_${safeName}_${idx}`;
-    });
-
-    try {
-      ingredientimagesRef = await uploadImagesToSanity(
-        ingredientData.ingredientImages,
-        ingredientNames,
-      );
-      if (!ingredientimagesRef)
-        throw new Error("Failed to upload ingredient images");
-    } catch (imagesError: any) {
-      console.error("Ingredient images upload error:", imagesError);
-      clearTimeout(timeoutId);
-      return {
-        error:
-          "Failed to upload ingredient images. Please try again with smaller images or fewer images.",
-      };
-    }
-
     const ingredientDoc = {
       _type: "ingredient",
       name: ingredientData.name,
       description: ingredientData.description,
-      ingredientImages: ingredientimagesRef?.map((image) => ({
+      ingredientImages: imagesRef?.map((image) => ({
         _type: "image",
         _key: image._id,
         asset: {
@@ -266,7 +241,7 @@ export async function deleteIngredient(ingredientId: string) {
 
     const imageAssetIds = [];
 
-    // Delete photos if they exist
+    // Get document photos if they exist
     for (const photo of existingIngredient.ingredientImages) {
       if (photo.asset?._ref) {
         imageAssetIds.push(photo.asset._ref);
