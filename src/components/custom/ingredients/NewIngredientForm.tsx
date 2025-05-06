@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { addNewIngredient, uploadImagesToSanity } from "@/lib/server_actions";
+import { addNewIngredient } from "@/lib/server_actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import FormImagesInput from "../common/FormImagesInput";
@@ -33,9 +33,9 @@ export default function NewIngredientForm() {
     data: newIngredientFormValuesType,
   ) => {
     try {
+      // 1️⃣ Validate form submission with Zod
       const isSafeData = newIngredientZodSchema.safeParse(data);
-
-      if (isSafeData.error) {
+      if (!isSafeData.success) {
         return toast.error("Validation Error!", {
           description: "Please fill in all fields correctly!",
           duration: 8000,
@@ -51,23 +51,36 @@ export default function NewIngredientForm() {
         });
       }
 
-      // upload images here first
+      // 2️⃣ Upload images via Formdata fetch request to upload API route
+      const formData = new FormData();
+      data.ingredientImages.forEach((file) => {
+        formData.append("images", file);
+      });
+
       const ingredientNames = data.ingredientImages.map((_, idx) => {
         const safeName = data.name.toLowerCase().replace(/\s+/g, "_").trim();
         return `ingredient_${safeName}_${idx}`;
       });
+      formData.append("imageNames", JSON.stringify(ingredientNames));
 
-      const ingredientimagesRef = await uploadImagesToSanity(
-        data.ingredientImages,
-        ingredientNames,
-      );
+      const apiUploadRes = await fetch(RELATIVE_PATHS.apiUploadImages, {
+        method: "POST",
+        body: formData,
+      });
 
-      if (!ingredientimagesRef || ingredientimagesRef.length < 1)
-        throw new Error("Failed to upload ingredient images");
+      if (!apiUploadRes.ok) {
+        const apiError = await apiUploadRes.json();
+        throw new Error(apiError.error || "Image upload via API failed!");
+      }
+      const { assets } = await apiUploadRes.json();
+      if (!Array.isArray(assets) || assets.length < 1)
+        throw new Error("No image assets returned from API upload!");
 
-      // add new ingredient
+      // 3️⃣ Build Sanity image references
+      const ingredientimagesRef = assets.map((asset) => asset._id) as string[];
+
+      // 4️⃣ Create new ingredient document
       const newIngredient = await addNewIngredient(data, ingredientimagesRef);
-
       if (newIngredient.success) {
         newIngredientForm.reset();
 
@@ -99,6 +112,7 @@ export default function NewIngredientForm() {
         });
       }
 
+      // redirect on success
       router.push(
         `${RELATIVE_PATHS.ingredients}/${newIngredient.ingredient_id}`,
       );

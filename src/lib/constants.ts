@@ -26,6 +26,9 @@ export const RELATIVE_PATHS = {
   ingredientSearchPage: "/explore/ingredients/search",
   ingredients: "/explore/ingredients",
   recipes: "/explore/recipes",
+
+  // api routes
+  apiUploadImages: "/api/sanity/upload-images",
 };
 
 export const DEFAULT_SEARCH_LIMIT = 16;
