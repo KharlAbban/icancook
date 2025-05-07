@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sanityClient } from "@/sanity/lib/client";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
+import { createClient } from "@sanity/client";
 
 // 1️⃣ Ensure this runs on Node.js, not Edge, to support streams:
 export const runtime = "nodejs";
+
+const token = String(process.env.NEXT_SANITY_WRITE_TOKEN);
+if (!token) throw new Error("No Sanity write token!");
+
+const sanityClientClient = createClient({
+  projectId: projectId,
+  dataset: dataset,
+  token: token,
+  useCdn: false,
+  apiVersion: apiVersion,
+});
 
 export async function POST(request: NextRequest) {
   if (request.method !== "POST") {
     return NextResponse.json({ error: "Method Not Allowed" }, { status: 405 });
   }
+
+  console.log(request.headers);
 
   try {
     // 2️⃣ Parse incoming multipart/form-data
@@ -26,7 +40,7 @@ export async function POST(request: NextRequest) {
     // 3️⃣ Upload each image to Sanity
     const uploadPromises = files.map(async (file, idx) => {
       // Sanity client accepts File/Blob or ArrayBuffer/Stream :contentReference[oaicite:9]{index=9}
-      const asset = await sanityClient.assets.upload("image", file, {
+      const asset = await sanityClientClient.assets.upload("image", file, {
         filename: imageNames[idx],
         contentType: file.type,
       });
