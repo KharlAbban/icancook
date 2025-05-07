@@ -1,16 +1,8 @@
+import { sanityClient } from "@/sanity/lib/client";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@sanity/client";
-import { dataset, projectId, token } from "@/sanity/env";
 
 // 1️⃣ Ensure this runs on Node.js, not Edge, to support streams:
 export const runtime = "nodejs";
-
-const client = createClient({
-  projectId: projectId,
-  dataset: dataset,
-  token: token,
-  useCdn: false,
-});
 
 export async function POST(request: NextRequest) {
   if (request.method !== "POST") {
@@ -34,7 +26,7 @@ export async function POST(request: NextRequest) {
     // 3️⃣ Upload each image to Sanity
     const uploadPromises = files.map(async (file, idx) => {
       // Sanity client accepts File/Blob or ArrayBuffer/Stream :contentReference[oaicite:9]{index=9}
-      const asset = await client.assets.upload("image", file, {
+      const asset = await sanityClient.assets.upload("image", file, {
         filename: imageNames[idx],
         contentType: file.type,
       });

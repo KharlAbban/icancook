@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import { AppHeader, ExploreGrid } from "@/components/custom";
 import { sanityClient } from "@/sanity/lib/client";
 import { Metadata } from "next";
