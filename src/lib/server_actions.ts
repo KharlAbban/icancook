@@ -109,7 +109,7 @@ export async function searchForItems(
 
 export async function deleteAsset(assetId: string) {
   try {
-    await sanityClient.delete(assetId);
+    await sanityWriteClient.delete(assetId);
     return true;
   } catch (error) {
     console.error(`Failed to delete asset ${assetId}:`, error);
