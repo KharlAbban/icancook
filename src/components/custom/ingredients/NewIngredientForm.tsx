@@ -1,6 +1,6 @@
 "use client";
 
-import { newIngredientFormValuesType } from "@/lib/types";
+import { newIngredientFormValuesType } from "@/lib/custom_types";
 import { newIngredientZodSchema } from "@/lib/zod_schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

@@ -10,7 +10,7 @@ import {
 import { sanityWriteClient } from "@/sanity/lib/write_client";
 import { revalidatePath } from "next/cache";
 import { DEFAULT_SEARCH_LIMIT, RELATIVE_PATHS } from "./constants";
-import { newIngredientFormValuesType } from "./types";
+import { newIngredientFormValuesType } from "./custom_types";
 import { SanityImageAssetDocument } from "next-sanity";
 
 interface SearchFilterProps {

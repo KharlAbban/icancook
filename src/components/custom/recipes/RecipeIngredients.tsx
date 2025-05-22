@@ -1,8 +1,9 @@
 import { RELATIVE_PATHS } from "@/lib/constants";
+import { RecipeIngredientsType } from "@/lib/custom_types";
 import Link from "next/link";
 
 interface RecipeIngredientsProps {
-  ingredients: string[] | undefined;
+  ingredients: RecipeIngredientsType;
 }
 
 export default function RecipeIngredients({
@@ -16,16 +17,16 @@ export default function RecipeIngredients({
         Recipe Ingredients ({ingredients.length})
       </h4>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         {ingredients.map((ingredient) => (
-          <article key={ingredient}>
+          <article key={ingredient.ingredientReference?.name}>
             <Link
               href={RELATIVE_PATHS.ingredients}
               className="font-semibold text-base block"
             >
-              {ingredient}
+              {ingredient.ingredientReference?.name}
             </Link>
-            <p className="text-sm">1 tbspn of olive oil</p>
+            <p className="text-sm">{ingredient.amount}</p>
           </article>
         ))}
       </div>

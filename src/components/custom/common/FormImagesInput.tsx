@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { newIngredientFormValuesType } from "@/lib/types";
+import { newIngredientFormValuesType } from "@/lib/custom_types";
 import { ImageIcon, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";

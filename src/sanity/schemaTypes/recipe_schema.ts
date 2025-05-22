@@ -32,13 +32,31 @@ export const recipe_schema = defineType({
       name: "ingredients",
       title: "Recipe Ingredients",
       type: "array",
-      of: [{ type: "string" }],
+      of: [
+        {
+          type: "object",
+          fields: [
+            {
+              name: "ingredientReference",
+              title: "Ingredient Name",
+              type: "reference",
+              to: [{ type: "ingredient" }, { type: "recipe" }],
+            },
+            {
+              name: "amount",
+              type: "string",
+              title: "Amount",
+              description: "Amount of this ingredient needed for this recipe",
+            },
+          ],
+        },
+      ],
       description: "A list of ingredients used in preparing this recipe",
     }),
     defineField({
       name: "description",
       title: "Short Recipe Description",
-      type: "string",
+      type: "text",
       description:
         "A brief desciption of this recipe: why you make it, how, when - add some notes here",
     }),
@@ -55,6 +73,13 @@ export const recipe_schema = defineType({
       type: "boolean",
       initialValue: false,
       description: "Is this recipe a favorite of yours?",
+    }),
+    defineField({
+      name: "steps",
+      title: "Recipe Steps",
+      description: "All the steps involved in making this recipe",
+      type: "array",
+      of: [{ type: "string" }],
     }),
   ],
   preview: {

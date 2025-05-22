@@ -15,7 +15,17 @@ export const SANITY_GET_RECIPE_BY_NAME_QUERY = defineQuery(`
 
 export const SANITY_GET_RECIPE_BY_ID_QUERY = defineQuery(`
     *[_type == "recipe" && _id == $recipeId][0] {
-        ...
+        ...,
+        ingredients[] {
+            amount,
+            ingredientReference -> {
+                name,
+                "image": select(
+                    _type == "ingredient" => ingredientImages[0],
+                    _type == "recipe" => recipeImages[0],
+                )
+            }
+        }
     }
 `);
 
