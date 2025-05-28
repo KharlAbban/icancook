@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const newIngredientZodSchema = z.object({
-  // Step 1: Basic Info
   name: z
     .string()
     .min(2, { message: "Ingredient name must be at least 2 characters" }),

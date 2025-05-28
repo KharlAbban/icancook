@@ -1,4 +1,4 @@
-import { AppHeader, RecipeDetails } from "@/components/custom";
+import { AppHeader, CookRecipe } from "@/components/custom";
 import {
   APP_LOGO_DARK_URL,
   APP_RECIPES_PAGE_URL,
@@ -29,16 +29,16 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${recipeInfo.name} Recipe Details ℹ️` || APP_TITLE,
+    title: `🧑‍🍳 Cooking ${recipeInfo.name}` || APP_TITLE,
     description:
       (recipeInfo.description && recipeInfo.description.slice(0, 120)) ||
       APP_TAGLINE,
     openGraph: {
-      title: `${recipeInfo.name} Recipe Details ℹ️` || APP_TITLE,
+      title: `🧑‍🍳 Cooking ${recipeInfo.name}` || APP_TITLE,
       description:
         (recipeInfo.description && recipeInfo.description.slice(0, 120)) ||
         APP_TAGLINE,
-      url: `${APP_RECIPES_PAGE_URL}/${recipeInfo._id}`,
+      url: `${APP_RECIPES_PAGE_URL}/${recipeInfo._id}/cooking`,
       siteName: APP_TITLE,
       images: [
         {
@@ -55,7 +55,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${recipeInfo.name} Recipe Details ℹ️` || APP_TITLE,
+      title: `🧑‍🍳 Cooking ${recipeInfo.name}` || APP_TITLE,
       description:
         (recipeInfo.description && recipeInfo.description.slice(0, 120)) ||
         APP_TAGLINE,
@@ -66,7 +66,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function RecipeDetailPage({
+export default async function CookingRecipePage({
   params,
 }: {
   params: Promise<{ recipeId: string }>;
@@ -79,12 +79,12 @@ export default async function RecipeDetailPage({
   return (
     <div className="w-full h-screen relative overflow-x-hidden">
       <AppHeader
-        className="fixed top-0 z-50 invert p-6"
+        className="fixed top-0 z-50 p-6"
         showLogo={false}
         showSidebar={false}
         showAdd={false}
       />
-      <RecipeDetails recipe={recipeInfo} />
+      <CookRecipe recipe={recipeInfo} />
     </div>
   );
 }

@@ -101,7 +101,9 @@ export default function DeleteIngredient({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel ref={dialogCancelref}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending} ref={dialogCancelref}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             disabled={isPending}
             onClick={handleIngredientDelete}
