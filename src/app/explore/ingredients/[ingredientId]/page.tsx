@@ -32,10 +32,10 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${ingredientInfo.name} Details ℹ️` || APP_TITLE,
+    title: `${ingredientInfo.name} Ingredient Details ℹ️` || APP_TITLE,
     description: ingredientInfo.description || APP_TAGLINE,
     openGraph: {
-      title: ingredientInfo.name || APP_TITLE,
+      title: `${ingredientInfo.name} Ingredient Details ℹ️` || APP_TITLE,
       description: ingredientInfo.description || APP_TAGLINE,
       url: `${APP_INGREDIENTS_PAGE_URL}/${ingredientInfo.name}`,
       siteName: APP_TITLE,
@@ -54,7 +54,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${ingredientInfo.name} Details ℹ️` || APP_TITLE,
+      title: `${ingredientInfo.name} Ingredient Details ℹ️` || APP_TITLE,
       description: ingredientInfo.description || APP_TAGLINE,
       images: [
         `${ingredientInfo.ingredientImages ? urlFor(ingredientInfo.ingredientImages[0]).auto("format").url() : APP_LOGO_DARK_URL}`,

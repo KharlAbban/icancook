@@ -11,56 +11,9 @@ import { sanityWriteClient } from "@/sanity/lib/write_client";
 import { revalidatePath } from "next/cache";
 import { DEFAULT_SEARCH_LIMIT, RELATIVE_PATHS } from "./constants";
 import { newIngredientFormValuesType } from "./custom_types";
-import { SanityImageAssetDocument } from "next-sanity";
 
 interface SearchFilterProps {
   page?: number;
-}
-
-// General Actions
-export async function uploadImagesToSanity(
-  assets: File[],
-  imageNames: string[],
-): Promise<SanityImageAssetDocument[] | null> {
-  try {
-    console.log("Sanity bulk asset upload start...");
-
-    // Validate all images before uploading
-    for (const asset of assets) {
-      if (asset.size > 10 * 1024 * 1024) {
-        // 10MB limit
-        throw new Error(
-          "One or more images are too large. Please use images smaller than 10MB each.",
-        );
-      }
-    }
-
-    // Upload images sequentially to avoid overwhelming the connection
-    const uploadedAssets = [];
-    for (let i = 0; i < assets.length; i++) {
-      const asset = assets[i];
-      const filename = imageNames[i];
-
-      const uploadedAsset = await sanityClient.assets.upload("image", asset, {
-        filename: filename,
-        timeout: 60000, // 60 second timeout
-      });
-
-      uploadedAssets.push(uploadedAsset);
-
-      // Add a small delay between uploads to prevent connection issues
-      if (i < assets.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      }
-    }
-
-    console.log("All assets uploaded!");
-
-    return uploadedAssets;
-  } catch (error: any) {
-    console.error("Sanity bulk asset upload error:", error.message);
-    throw error;
-  }
 }
 
 export async function searchForItems(

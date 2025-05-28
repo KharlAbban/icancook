@@ -6,7 +6,7 @@ export const APP_TAGLINE = "Your personal cooking companion diary";
 export const APP_DESCRIPTION =
   "icancook is a sophisticated platform designed for cooking enthusiasts who want to curate their own collection of recipes in a visually appealing and user-friendly environment. Built with a mobile-first approach, icancook transforms the way you interact with your recipes, making cooking more enjoyable and accessible. Key Features: Visually Stunning Interface, Personal Recipe Collection, Seamless Mobile Experience, Infinite Recipe Discovery, Offline Accessibility, and more!";
 export const APP_DESCRIPTION_SHORT =
-  "iCanCook is a mobile-first personal cooking companion that helps you discover, save, and organize your favorite recipes in a visually stunning Pinterest-style layout, making your culinary journey both beautiful and effortless.";
+  "icancook is a mobile-first personal cooking companion that helps you discover, save, and organize your favorite recipes in a visually stunning Pinterest-style layout, making your culinary journey both beautiful and effortless.";
 
 // routes and paths
 export const APP_BASE_URL = "https://icancook.vercel.app";
@@ -73,32 +73,5 @@ export const SIDEBAR_MODULES = [
         icon: Plus,
       },
     ],
-  },
-];
-
-export const SAMPLE_RECIPE_DATA = [
-  {
-    id: "1",
-    recipeName: "Fish in Karella Sauce",
-    cookTime: "1 hour",
-    image: "/images/fish-recipe-image.jpg",
-  },
-  {
-    id: "2",
-    recipeName: "Fragrant Cheese Spiced Bread",
-    cookTime: "30 mins",
-    image: "/images/bread-recipe-image.jpg",
-  },
-  {
-    id: "3",
-    recipeName: "Vegetable-based Sandwich",
-    cookTime: "5 mins",
-    image: "/images/sandwich-recipe-image.jpg",
-  },
-  {
-    id: "4",
-    recipeName: "Ato's Special Bread & Egg",
-    cookTime: "15 mins",
-    image: "/images/bread-and-egg-recipe-image.jpg",
   },
 ];

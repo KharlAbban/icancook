@@ -49,6 +49,21 @@ export const recipe_schema = defineType({
               description: "Amount of this ingredient needed for this recipe",
             },
           ],
+          preview: {
+            select: {
+              title: "ingredientReference.name",
+              subtitle: "amount",
+              media: "ingredientReference.recipeImages.[0]",
+            },
+            prepare: (selection) => {
+              const { title, subtitle, media } = selection;
+              return {
+                title: title || "No ingredient name",
+                subtitle: subtitle || "No amount specified",
+                media: media || undefined,
+              };
+            },
+          },
         },
       ],
       description: "A list of ingredients used in preparing this recipe",

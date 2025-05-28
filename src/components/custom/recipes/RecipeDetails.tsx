@@ -3,7 +3,7 @@
 import { vetrinoFont } from "@/app/fonts";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { APP_TITLE } from "@/lib/constants";
+import { APP_TITLE, RELATIVE_PATHS } from "@/lib/constants";
 import { SANITY_GET_RECIPE_BY_ID_QUERYResult } from "@/sanity/types";
 import { notFound } from "next/navigation";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
@@ -12,6 +12,7 @@ import ImageSlider from "../common/ImageSlider";
 import { Trash } from "lucide-react";
 import RecipeIngredients from "./RecipeIngredients";
 import { useState } from "react";
+import Link from "next/link";
 
 interface RecipeDetailsProps {
   recipe: SANITY_GET_RECIPE_BY_ID_QUERYResult;
@@ -73,13 +74,11 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
               <HiOutlineShoppingBag size={20} />
               {showIngr ? "Hide Ingredients" : "See Ingredients"}
             </Button>
-            <Button
-              size="lg"
-              onClick={() => {}}
-              className="rounded-full truncate"
-            >
-              <PiCookingPotLight size={20} />
-              Start Cooking
+            <Button asChild size="lg" className="rounded-full truncate">
+              <Link href={`${RELATIVE_PATHS.recipes}/${recipe._id}/cooking`}>
+                <PiCookingPotLight size={20} />
+                Start Cooking
+              </Link>
             </Button>
           </div>
         </SheetContent>

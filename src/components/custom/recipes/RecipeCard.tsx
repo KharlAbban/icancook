@@ -126,7 +126,7 @@ export default function RecipeCard({ recipe, truncate }: RecipeCardProps) {
           )}
         </Button>
       </div>
-      <div className="">
+      <div>
         <h3
           className={`${truncate && "truncate"} font-semibold text-base mb-1`}
         >

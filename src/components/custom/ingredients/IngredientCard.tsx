@@ -30,7 +30,7 @@ export default function IngredientCard({ ingredient }: IngredientCardProps) {
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         </div>
-        <div className="">
+        <div>
           <h3 className="font-semibold text-base mb-1 truncate">
             {ingredient.name}
           </h3>

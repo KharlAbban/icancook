@@ -21,6 +21,7 @@ import { addNewIngredient } from "@/lib/server_actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import FormImagesInput from "../common/FormImagesInput";
+import { apiVersion, dataset, projectId } from "@/sanity/env";
 
 export default function NewIngredientForm() {
   const router = useRouter();
@@ -52,29 +53,35 @@ export default function NewIngredientForm() {
       }
 
       // 2️⃣ Upload images via Formdata fetch request to upload API route
-      const formData = new FormData();
-      data.ingredientImages.forEach((file) => {
-        formData.append("images", file);
-      });
-
       const ingredientNames = data.ingredientImages.map((_, idx) => {
         const safeName = data.name.toLowerCase().replace(/\s+/g, "_").trim();
         return `ingredient_${safeName}_${idx}`;
       });
-      formData.append("imageNames", JSON.stringify(ingredientNames));
 
-      const apiUploadRes = await fetch(RELATIVE_PATHS.apiUploadImages, {
-        method: "POST",
-        body: formData,
+      const uploadPromises = data.ingredientImages.map(async (file, idx) => {
+        const res = await fetch(
+          `https://${projectId}.api.sanity.io/v${apiVersion}/assets/images/${dataset}?filename=${ingredientNames[idx]}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN}`,
+            },
+            body: file,
+          },
+        );
+
+        if (!res.ok) {
+          throw new Error(`Failed to upload image: ${res.statusText}`);
+        }
+
+        const asset = await res.json();
+
+        return {
+          _id: asset.document._id,
+        };
       });
 
-      if (!apiUploadRes.ok) {
-        const apiError = await apiUploadRes.json();
-        throw new Error(apiError.error || "Image upload via API failed!");
-      }
-      const { assets } = await apiUploadRes.json();
-      if (!Array.isArray(assets) || assets.length < 1)
-        throw new Error("No image assets returned from API upload!");
+      const assets = await Promise.all(uploadPromises);
 
       // 3️⃣ Build Sanity image references
       const ingredientimagesRef = assets.map((asset) => asset._id) as string[];
