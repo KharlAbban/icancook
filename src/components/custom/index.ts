@@ -18,6 +18,8 @@ import SearchPagination from "./common/SearchPagination";
 import ImageSlider from "./common/ImageSlider";
 import DeleteIngredient from "./ingredients/DeleteIngredient";
 import CookRecipe from "./recipes/CookRecipe";
+import NewRecipeForm from "./recipes/new_recipe/NewRecipeForm";
+import DeleteRecipe from "./recipes/DeleteRecipe";
 
 export {
   PWARegister,
@@ -40,4 +42,6 @@ export {
   ImageSlider,
   DeleteIngredient,
   CookRecipe,
+  NewRecipeForm,
+  DeleteRecipe,
 };

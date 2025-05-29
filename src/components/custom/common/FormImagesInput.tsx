@@ -11,17 +11,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { newIngredientFormValuesType } from "@/lib/custom_types";
 import { ImageIcon, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
 
 interface FormImagesInputProps {
-  form: UseFormReturn<newIngredientFormValuesType>;
+  form: any;
+  imageType: "ingredient" | "recipe";
 }
 
-export default function FormImagesInput({ form }: FormImagesInputProps) {
+export default function FormImagesInput({
+  form,
+  imageType,
+}: FormImagesInputProps) {
   const [images, setImages] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
@@ -29,6 +31,8 @@ export default function FormImagesInput({ form }: FormImagesInputProps) {
     if (!e.target.files || e.target.files.length === 0) return;
 
     const newFiles = Array.from(e.target.files);
+    const formImageField =
+      imageType === "ingredient" ? "ingredientImages" : "recipeImages";
 
     setImages((prev) => {
       const slotsLeft = Math.max(5 - prev.length, 0);
@@ -37,7 +41,7 @@ export default function FormImagesInput({ form }: FormImagesInputProps) {
 
       const updated = [...prev, ...filesToAdd];
 
-      form.setValue("ingredientImages", updated);
+      form.setValue(formImageField, updated);
 
       return updated;
     });
@@ -55,9 +59,11 @@ export default function FormImagesInput({ form }: FormImagesInputProps) {
   const removeImage = (index: number) => {
     const updatedFiles = images.filter((_, i) => i !== index);
     setImages(updatedFiles);
+    const formImageField =
+      imageType === "ingredient" ? "ingredientImages" : "recipeImages";
 
     // update form
-    form.setValue("ingredientImages", updatedFiles);
+    form.setValue(formImageField, updatedFiles);
 
     // Revoke the URL to prevent memory leaks
     URL.revokeObjectURL(previewUrls[index]);
@@ -67,11 +73,11 @@ export default function FormImagesInput({ form }: FormImagesInputProps) {
   return (
     <FormField
       control={form.control}
-      name="ingredientImages"
+      name={imageType === "ingredient" ? "ingredientImages" : "recipeImages"}
       render={() => (
         <FormItem>
           <FormLabel className="text-gray-500 text-sm">
-            Ingredient Images
+            {imageType === "ingredient" ? "Ingredient" : "Recipe"} Images
           </FormLabel>
           <FormControl>
             <div className="space-y-4">

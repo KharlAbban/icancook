@@ -10,7 +10,10 @@ import {
 import { sanityWriteClient } from "@/sanity/lib/write_client";
 import { revalidatePath } from "next/cache";
 import { DEFAULT_SEARCH_LIMIT, RELATIVE_PATHS } from "./constants";
-import { newIngredientFormValuesType } from "./custom_types";
+import {
+  newIngredientFormValuesType,
+  newRecipeFormValuesType,
+} from "./custom_types";
 
 interface SearchFilterProps {
   page?: number;
@@ -124,6 +127,102 @@ export async function removeRecipeFromFavorites(recipeId: string) {
       .commit();
 
     revalidatePath(RELATIVE_PATHS.homePage);
+
+    return {
+      success: true,
+    };
+  } catch (error: any) {
+    console.error(error.message);
+
+    return {
+      error: error.message,
+    };
+  }
+}
+
+export async function addNewRecipe(
+  recipeData: newRecipeFormValuesType,
+  imagesRef: string[],
+) {
+  try {
+    // Add timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
+
+    const recipeDoc = {
+      _type: "recipe",
+      name: recipeData.name,
+      recipeImages: imagesRef?.map((imageRef) => ({
+        _type: "image",
+        _key: imageRef,
+        asset: {
+          _type: "reference",
+          _ref: imageRef,
+        },
+      })),
+      recipeType: recipeData.recipeType,
+      ingredients: recipeData.ingredients?.map((ingredient) => ({
+        ingredientReference: {
+          _type: "reference",
+          _ref: ingredient.ingredientReference,
+        },
+        amount: ingredient.amount,
+      })),
+      description: recipeData.description,
+      cookTime: recipeData.cookTime,
+      isFavorite: false,
+      steps: recipeData.steps.map((step) => step.step),
+    };
+
+    const newRecipeDoc = await sanityWriteClient.create(recipeDoc, {
+      timeout: 120000,
+    });
+
+    clearTimeout(timeoutId);
+
+    return {
+      success: true,
+      recipe_id: newRecipeDoc._id,
+    };
+  } catch (error: any) {
+    console.error(error.message);
+
+    return {
+      error: error.message,
+    };
+  }
+}
+
+export async function deleteRecipe(recipeId: string) {
+  try {
+    const existingRecipe = await sanityClient.fetch(
+      SANITY_GET_RECIPE_BY_ID_QUERY,
+      {
+        recipeId: recipeId,
+      },
+    );
+
+    if (!existingRecipe || !existingRecipe.recipeImages)
+      throw new Error("Ingredient does not exist!");
+
+    const imageAssetIds = [];
+
+    // Get document photos if they exist
+    for (const photo of existingRecipe.recipeImages) {
+      if (photo.asset?._ref) {
+        imageAssetIds.push(photo.asset._ref);
+      }
+    }
+
+    // Delete ingredient document
+    await sanityWriteClient.delete(recipeId);
+
+    // Delete all images
+    for (const assetId of imageAssetIds) {
+      await deleteAsset(assetId);
+    }
+
+    revalidatePath(RELATIVE_PATHS.ingredients);
 
     return {
       success: true,

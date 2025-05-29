@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { newIngredientZodSchema } from "./zod_schemas";
+import { newIngredientZodSchema, newRecipeZodSchema } from "./zod_schemas";
 import {
   internalGroqTypeReferenceTo,
   SanityImageCrop,
@@ -9,6 +9,8 @@ import {
 export type newIngredientFormValuesType = z.infer<
   typeof newIngredientZodSchema
 >;
+
+export type newRecipeFormValuesType = z.infer<typeof newRecipeZodSchema>;
 
 export type RecipeIngredientsType = Array<{
   amount: string | null;

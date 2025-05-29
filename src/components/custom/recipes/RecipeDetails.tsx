@@ -9,10 +9,10 @@ import { notFound } from "next/navigation";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { PiCookingPotLight } from "react-icons/pi";
 import ImageSlider from "../common/ImageSlider";
-import { Trash } from "lucide-react";
 import RecipeIngredients from "./RecipeIngredients";
 import { useState } from "react";
 import Link from "next/link";
+import DeleteRecipe from "./DeleteRecipe";
 
 interface RecipeDetailsProps {
   recipe: SANITY_GET_RECIPE_BY_ID_QUERYResult;
@@ -33,7 +33,7 @@ export default function RecipeDetails({ recipe }: RecipeDetailsProps) {
         <div className="shrink-0 p-4">
           <p className="text-gray-500 mb-2 text-xs flex items-center justify-between w-full gap-6">
             Recipe
-            <Trash className="h-5 w-5 text-red-600" />
+            <DeleteRecipe recipeId={recipe._id} />
           </p>
           <h2 className={`text-2xl font-medium ${vetrinoFont.className} mb-2`}>
             {recipe.name}

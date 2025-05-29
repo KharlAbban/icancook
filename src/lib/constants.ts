@@ -75,3 +75,11 @@ export const SIDEBAR_MODULES = [
     ],
   },
 ];
+
+export const NEW_RECIPE_TOTAL_STEPS = 3;
+
+export const NEW_RECIPE_FORM_STEPS = {
+  1: ["name", "recipeType", "cookTime", "description", "recipeImages"],
+  2: ["ingredients"],
+  3: ["steps"],
+};

@@ -1,15 +1,22 @@
-import { AppHeader, NoContent } from "@/components/custom";
-import { Button } from "@/components/ui/button";
-import { RELATIVE_PATHS } from "@/lib/constants";
+import { AppHeader, NewRecipeForm } from "@/components/custom";
+import { sanityClient } from "@/sanity/lib/client";
+import { SANITY_FETCH_ALL_INGREDIENTS_QUERY } from "@/sanity/lib/queries";
 import { IceCreamBowl } from "lucide-react";
 import { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Add New Recipe",
 };
 
 export default async function NewRecipePage() {
+  const allIngredients = await sanityClient.fetch(
+    SANITY_FETCH_ALL_INGREDIENTS_QUERY,
+  );
+
+  if (!allIngredients || allIngredients.length < 1) {
+    return "No ingredients available. Please add ingredients first.";
+  }
+
   return (
     <div className="w-full">
       <AppHeader showSearch={false} showAdd={false} />
@@ -19,18 +26,7 @@ export default async function NewRecipePage() {
           Add New Recipe <IceCreamBowl />
         </h2>
 
-        <div className="h-[40vh] w-full">
-          <NoContent
-            title="Coming Soon"
-            message={`Explore pre-made recipes while we work on making this feature available!`}
-          >
-            <Button asChild>
-              <Link href={RELATIVE_PATHS.homePage}>
-                Explore Recipes <IceCreamBowl />
-              </Link>
-            </Button>
-          </NoContent>
-        </div>
+        <NewRecipeForm allIngredients={allIngredients} />
       </section>
     </div>
   );
