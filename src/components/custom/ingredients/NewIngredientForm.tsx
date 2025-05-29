@@ -188,7 +188,7 @@ export default function NewIngredientForm() {
             )}
           />
 
-          <FormImagesInput form={newIngredientForm} />
+          <FormImagesInput imageType="ingredient" form={newIngredientForm} />
 
           <div className="w-full mt-8">
             <Button
