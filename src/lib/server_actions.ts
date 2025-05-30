@@ -167,6 +167,7 @@ export async function addNewRecipe(
           _ref: ingredient.ingredientReference,
         },
         amount: ingredient.amount,
+        _key: crypto.randomUUID(),
       })),
       description: recipeData.description,
       cookTime: recipeData.cookTime,
