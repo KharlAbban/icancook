@@ -11,6 +11,7 @@ import { ModeToggle, PWARegister, ThemeProvider } from "@/components/custom";
 import { Toaster } from "@/components/ui/sonner";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import { evolventaFont } from "./fonts";
+import { SanityLive } from "@/sanity/lib/live";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_BASE_URL),
@@ -90,6 +91,7 @@ export default function RootLayout({
             position="bottom-center"
           />
           <Analytics />
+          <SanityLive />
         </PostHogProvider>
       </body>
     </html>
