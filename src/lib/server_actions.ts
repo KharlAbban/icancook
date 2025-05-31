@@ -145,9 +145,8 @@ export async function addNewRecipe(
   imagesRef: string[],
 ) {
   try {
-    // Add timeout handling
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
     const recipeDoc = {
       _type: "recipe",
@@ -176,7 +175,7 @@ export async function addNewRecipe(
     };
 
     const newRecipeDoc = await sanityWriteClient.create(recipeDoc, {
-      timeout: 120000,
+      signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
@@ -186,10 +185,17 @@ export async function addNewRecipe(
       recipe_id: newRecipeDoc._id,
     };
   } catch (error: any) {
-    console.error(error.message);
+    console.error("Create recipe error:", error);
+
+    // More specific error handling
+    if (error.name === "AbortError") {
+      return {
+        error: "Request timed out while creating recipe",
+      };
+    }
 
     return {
-      error: error.message,
+      error: error.message || "Unknown error occurred",
     };
   }
 }
@@ -245,7 +251,7 @@ export async function addNewIngredient(
   try {
     // Add timeout handling
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
     const ingredientDoc = {
       _type: "ingredient",
@@ -262,7 +268,7 @@ export async function addNewIngredient(
     };
 
     const newIngredientDoc = await sanityWriteClient.create(ingredientDoc, {
-      timeout: 120000,
+      signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
@@ -272,10 +278,17 @@ export async function addNewIngredient(
       ingredient_id: newIngredientDoc._id,
     };
   } catch (error: any) {
-    console.error(error.message);
+    console.error("Create ingredient error:", error);
+
+    // More specific error handling
+    if (error.name === "AbortError") {
+      return {
+        error: "Request timed out while creating ingredient",
+      };
+    }
 
     return {
-      error: error.message,
+      error: error.message || "Unknown error occurred",
     };
   }
 }

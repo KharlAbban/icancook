@@ -64,73 +64,139 @@ export default function NewRecipeForm({
         return `recipe_${safeName}_${idx}`;
       });
 
-      const uploadPromises = data.recipeImages.map(async (file, idx) => {
-        const res = await fetch(
-          `https://${projectId}.api.sanity.io/v${apiVersion}/assets/images/${dataset}?filename=${recipeNames[idx]}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN}`,
-            },
-            body: file,
-          },
-        );
+      const uploadWithRetry = async (
+        file: File,
+        filename: string,
+        retries = 3,
+      ): Promise<{ _id: string }> => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout per upload
 
-        if (!res.ok) {
-          throw new Error(`Failed to upload image: ${res.statusText}`);
+            const res = await fetch(
+              `https://${projectId}.api.sanity.io/v${apiVersion}/assets/images/${dataset}?filename=${filename}`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN}`,
+                },
+                body: file,
+                signal: controller.signal,
+              },
+            );
+
+            clearTimeout(timeoutId);
+
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+
+            const asset = await res.json();
+            return { _id: asset.document._id };
+          } catch (error: any) {
+            console.error(`Upload attempt ${attempt} failed:`, error.message);
+
+            if (attempt === retries) {
+              throw new Error(
+                `Failed to upload ${filename} after ${retries} attempts: ${error.message}`,
+              );
+            }
+
+            // Wait before retry (exponential backoff)
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.pow(2, attempt) * 1000),
+            );
+          }
         }
+        throw new Error("Upload failed");
+      };
 
-        const asset = await res.json();
-
-        return {
-          _id: asset.document._id,
-        };
-      });
-
-      const assets = await Promise.all(uploadPromises);
+      // Upload images sequentially to avoid overwhelming mobile connections
+      const assets: { _id: string }[] = [];
+      for (let i = 0; i < data.recipeImages.length; i++) {
+        const asset = await uploadWithRetry(
+          data.recipeImages[i],
+          recipeNames[i],
+        );
+        assets.push(asset);
+      }
 
       // 3️⃣ Build Sanity image references
       const recipeImagesRef = assets.map((asset) => asset._id) as string[];
 
-      // 4️⃣ Create new recipe document
-      const newRecipe = await addNewRecipe(data, recipeImagesRef);
-      if (newRecipe.success) {
-        newRecipeForm.reset();
+      // 4️⃣ Create new recipe document with retry
+      const createRecipeWithRetry = async (retries = 3) => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+          try {
+            const newRecipe = await addNewRecipe(data, recipeImagesRef);
+            if (newRecipe.success) {
+              return newRecipe;
+            } else {
+              throw new Error(newRecipe.error || "Failed to create recipe");
+            }
+          } catch (error: any) {
+            console.error(
+              `Recipe creation attempt ${attempt} failed:`,
+              error.message,
+            );
 
-        toast.success("Successfully added new recipe!", {
-          duration: 5000,
-          icon: (
-            <Image
-              src={APP_LOGO_URL}
-              alt={APP_TITLE}
-              title={APP_TITLE}
-              height={40}
-              width={40}
-            />
-          ),
-        });
-      } else {
-        return toast.error("Error adding new recipe!", {
-          description: newRecipe.error,
-          duration: 8000,
-          icon: (
-            <Image
-              src={APP_LOGO_URL}
-              alt={APP_TITLE}
-              title={APP_TITLE}
-              height={40}
-              width={40}
-            />
-          ),
-        });
+            if (attempt === retries) {
+              throw error;
+            }
+
+            // Wait before retry
+            await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
+          }
+        }
+      };
+
+      const newRecipe = await createRecipeWithRetry();
+
+      if (!newRecipe || !newRecipe.recipe_id) {
+        throw new Error(newRecipe?.error || "Failed to create recipe");
       }
+
+      newRecipeForm.reset();
+
+      toast.success("Successfully added new recipe!", {
+        duration: 5000,
+        icon: (
+          <Image
+            src={APP_LOGO_URL}
+            alt={APP_TITLE}
+            title={APP_TITLE}
+            height={40}
+            width={40}
+          />
+        ),
+      });
 
       // redirect on success
       router.push(`${RELATIVE_PATHS.recipes}/${newRecipe.recipe_id}`);
     } catch (error: any) {
-      console.error(error.message);
-      toast.error("An error occured!", {
-        description: error.message,
+      console.error("Recipe submission error:", error.message);
+
+      // More specific error messages
+      let errorMessage = "An error occurred!";
+      let description = error.message;
+
+      if (error.name === "AbortError") {
+        errorMessage = "Request timed out!";
+        description =
+          "The operation took too long. Please check your connection and try again.";
+      } else if (error.message.includes("Failed to upload")) {
+        errorMessage = "Image upload failed!";
+        description =
+          "There was a problem uploading your images. Please try again.";
+      } else if (error.message.includes("Failed to create recipe")) {
+        errorMessage = "Recipe creation failed!";
+        description =
+          "Images uploaded successfully, but recipe creation failed. Please contact support.";
+      }
+
+      toast.error(errorMessage, {
+        description,
         duration: 8000,
         icon: (
           <Image
@@ -203,7 +269,7 @@ export default function NewRecipeForm({
                 <Button
                   disabled={newRecipeForm.formState.isSubmitting}
                   type="submit"
-                  className="w-1/3 shrink-0"
+                  className="w-1/2 shrink-0"
                   size="lg"
                 >
                   {newRecipeForm.formState.isSubmitting
