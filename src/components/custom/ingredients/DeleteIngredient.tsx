@@ -88,7 +88,7 @@ export default function DeleteIngredient({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" disabled title="No unneceesary deletions!">
+        <Button variant="ghost" title="No unneceesary deletions!">
           <Trash className="h-5 w-5 text-red-600" />
         </Button>
       </AlertDialogTrigger>

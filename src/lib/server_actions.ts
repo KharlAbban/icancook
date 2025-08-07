@@ -14,9 +14,60 @@ import {
   newIngredientFormValuesType,
   newRecipeFormValuesType,
 } from "./custom_types";
+import { SanityImageAssetDocument } from "next-sanity";
 
 interface SearchFilterProps {
   page?: number;
+}
+
+// General Actions
+export async function uploadImagesToSanity(
+  assets: File[],
+  imageNames: string[],
+): Promise<SanityImageAssetDocument[] | null> {
+  try {
+    console.log("Sanity bulk asset upload start...");
+
+    // Validate all images before uploading
+    for (const asset of assets) {
+      if (asset.size > 10 * 1024 * 1024) {
+        // 10MB limit
+        throw new Error(
+          "One or more images are too large. Please use images smaller than 10MB each.",
+        );
+      }
+    }
+
+    // Upload images sequentially to avoid overwhelming the connection
+    const uploadedAssets = [];
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+      const filename = imageNames[i];
+
+      const uploadedAsset = await sanityWriteClient.assets.upload(
+        "image",
+        asset,
+        {
+          filename: filename,
+          timeout: 60000, // 60 second timeout
+        },
+      );
+
+      uploadedAssets.push(uploadedAsset);
+
+      // Add a small delay between uploads to prevent connection issues
+      if (i < assets.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+
+    console.log("All assets uploaded!");
+
+    return uploadedAssets;
+  } catch (error: any) {
+    console.error("Sanity bulk asset upload error:", error.message);
+    throw error;
+  }
 }
 
 export async function searchForItems(
@@ -246,29 +297,54 @@ export async function deleteRecipe(recipeId: string) {
 // Ingredient Actions
 export async function addNewIngredient(
   ingredientData: newIngredientFormValuesType,
-  imagesRef: string[],
 ) {
   try {
     // Add timeout handling
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout
+
+    let ingredientimagesRef: SanityImageAssetDocument[] | null;
+
+    const ingredientNames = ingredientData.ingredientImages.map((_, idx) => {
+      const safeName = ingredientData.name
+        .toLowerCase()
+        .replace(/\s+/g, "_")
+        .trim();
+      return `ingredient_${safeName}_${idx}`;
+    });
+
+    try {
+      ingredientimagesRef = await uploadImagesToSanity(
+        ingredientData.ingredientImages,
+        ingredientNames,
+      );
+      if (!ingredientimagesRef)
+        throw new Error("Failed to upload ingredient images");
+    } catch (imagesError: any) {
+      console.error("Ingredient images upload error:", imagesError);
+      clearTimeout(timeoutId);
+      return {
+        error:
+          "Failed to upload ingredient images. Please try again with smaller images or fewer images.",
+      };
+    }
 
     const ingredientDoc = {
       _type: "ingredient",
       name: ingredientData.name,
       description: ingredientData.description,
-      ingredientImages: imagesRef?.map((imageRef) => ({
+      ingredientImages: ingredientimagesRef?.map((image) => ({
         _type: "image",
-        _key: imageRef,
+        _key: image._id,
         asset: {
           _type: "reference",
-          _ref: imageRef,
+          _ref: image._id,
         },
       })),
     };
 
     const newIngredientDoc = await sanityWriteClient.create(ingredientDoc, {
-      signal: controller.signal,
+      timeout: 120000,
     });
 
     clearTimeout(timeoutId);
@@ -278,17 +354,10 @@ export async function addNewIngredient(
       ingredient_id: newIngredientDoc._id,
     };
   } catch (error: any) {
-    console.error("Create ingredient error:", error);
-
-    // More specific error handling
-    if (error.name === "AbortError") {
-      return {
-        error: "Request timed out while creating ingredient",
-      };
-    }
+    console.error(error.message);
 
     return {
-      error: error.message || "Unknown error occurred",
+      error: error.message,
     };
   }
 }
