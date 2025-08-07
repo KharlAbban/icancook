@@ -21,7 +21,7 @@ import { addNewIngredient } from "@/lib/server_actions";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import FormImagesInput from "../common/FormImagesInput";
-import { apiVersion, dataset, projectId } from "@/sanity/env";
+import Compressor from "compressorjs";
 
 export default function NewIngredientForm() {
   const router = useRouter();
@@ -52,42 +52,36 @@ export default function NewIngredientForm() {
         });
       }
 
-      // 2️⃣ Upload images via Formdata fetch request to upload API route
-      const ingredientNames = data.ingredientImages.map((_, idx) => {
-        const safeName = data.name.toLowerCase().replace(/\s+/g, "_").trim();
-        return `ingredient_${safeName}_${idx}`;
-      });
-
-      const uploadPromises = data.ingredientImages.map(async (file, idx) => {
-        const res = await fetch(
-          `https://${projectId}.api.sanity.io/v${apiVersion}/assets/images/${dataset}?filename=${ingredientNames[idx]}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_SANITY_WRITE_TOKEN}`,
+      // 2. Compress images
+      const compressImage = (file: File): Promise<File> =>
+        new Promise((resolve, reject) => {
+          new Compressor(file, {
+            quality: 0.8,
+            maxWidth: 1024,
+            convertSize: 0, // Always convert to WebP
+            mimeType: "image/webp",
+            success(result) {
+              resolve(
+                new File(
+                  [result],
+                  `compressed-${data.name.replace(" ", "").trim()}-${Date.now()}.webp`,
+                  {
+                    type: "image/webp",
+                  },
+                ),
+              );
+              console.log("Image compressed successfully: ", result.size);
             },
-            body: file,
-          },
-        );
+            error: reject,
+          });
+        });
 
-        if (!res.ok) {
-          throw new Error(`Failed to upload image: ${res.statusText}`);
-        }
-
-        const asset = await res.json();
-
-        return {
-          _id: asset.document._id,
-        };
-      });
-
-      const assets = await Promise.all(uploadPromises);
-
-      // 3️⃣ Build Sanity image references
-      const ingredientimagesRef = assets.map((asset) => asset._id) as string[];
+      data.ingredientImages = await Promise.all(
+        data.ingredientImages.map(compressImage),
+      );
 
       // 4️⃣ Create new ingredient document
-      const newIngredient = await addNewIngredient(data, ingredientimagesRef);
+      const newIngredient = await addNewIngredient(data);
       if (newIngredient.success) {
         newIngredientForm.reset();
 
